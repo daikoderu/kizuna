@@ -1,12 +1,10 @@
 import datetime
 import os
-import sys
 from pathlib import Path
 
 import PyInstaller.__main__
 import click
 
-from kizuna.config import settings
 from kizuna.management.exceptions import SettingsValidationError, ManagementError
 from kizuna.management.setup import initialize
 
@@ -55,7 +53,7 @@ def command():
             str(launch_file), '--onefile', '--windowed',
             '-n', project_name,
             '-p', str(base_directory),
-            '--add-data', f'assets:assets',
+            '--add-data', 'assets:assets',
             '--collect-submodules', 'src',
             '--hidden-import', 'settings',
             '--distpath', str(build_directory),

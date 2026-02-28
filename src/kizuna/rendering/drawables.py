@@ -1,7 +1,6 @@
 import pyglet.text
 
-from kizuna.core.datatypes import Vector2, Color, validate_vector2, validate_color
-from kizuna.core.validation import validate_str
+from kizuna.core.datatypes import Vector2, Color
 
 
 class Drawable:

@@ -1,8 +1,6 @@
 """Project management and initialization exceptions.
 """
 
-from pathlib import Path
-
 
 class ManagementError(Exception):
     """Base class for exceptions related to project management.

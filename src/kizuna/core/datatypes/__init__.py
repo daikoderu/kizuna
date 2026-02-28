@@ -1,2 +1,2 @@
-from .vector2 import *
-from .color import *
+from .vector2 import *  # noqa
+from .color import *  # noqa
