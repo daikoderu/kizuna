@@ -1,0 +1,38 @@
+[project]
+name = 'kizuna'
+version = '0.1.0'
+authors = [
+    { name = 'Daniel Pérez Porras "Daikoderu"', email = 'daikoderu@gmail.com' },
+]
+description = 'A game engine on top of Pyglet.'
+readme = 'README.md'
+license = 'MIT'
+requires-python = '>=3.12'
+dependencies = [
+    'click',
+    'rich',
+    'pydantic',
+    'pyglet>=2.1',
+    'pyinstaller>=6.19',
+]
+classifiers = [
+    'Programming Language :: Python :: 3',
+    'Natural Language :: English',
+]
+
+[project.scripts]
+kizuna = 'kizuna_cli.entrypoint:main'
+
+[project.urls]
+'Homepage' = 'https://github.com/daikoderu/kizuna'
+
+[build-system]
+requires = ['setuptools>=82.0.0']
+build-backend = 'setuptools.build_meta'
+
+[tool.setuptools.packages.find]
+where = ['src']
+
+[tool.setuptools.package-data]
+kizuna = [
+]
