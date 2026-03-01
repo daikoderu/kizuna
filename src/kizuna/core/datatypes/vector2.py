@@ -1,7 +1,11 @@
 from dataclasses import dataclass
-from typing import Self, Iterator, Any
+from typing import Self, Iterator, Any, TYPE_CHECKING
 
 from kizuna.core.validation import validate_float
+
+if TYPE_CHECKING:
+    from kizuna.core.datatypes import IVector2
+
 
 type Vector2Like = tuple[int | float, int | float] | list[int | float]
 """Alias for a tuple or list that represents a floating-point 2D vector.
@@ -46,7 +50,8 @@ class Vector2:
 
     ..  important::
 
-        :py:type:`IVector2` and :py:type:`Vector2` instances cannot be operated together.
+        :py:type:`IVector2` and :py:type:`Vector2` instances cannot be operated together. Use the
+        :py:meth:`ivector2_to_vector` method to convert an IVector2 to a Vector2.
     """
     x: float
     y: float
@@ -242,3 +247,12 @@ def validate_vector2_or_scalar(value: Vector2 | Vector2Like | int | float) -> Ve
         raise TypeError(
             f'Value must be int, float, Vector2 or convertible to Vector2, got {type(value).__qualname__}.'
         )
+
+
+def ivector2_to_vector(value: 'IVector2') -> Vector2:
+    """Convert a IVector2 to a Vector2.
+
+    :param value: The value to convert.
+    :return: The converted value.
+    """
+    return Vector2(value.x, value.y)

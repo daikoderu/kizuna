@@ -1,7 +1,11 @@
 from dataclasses import dataclass
-from typing import Self, Iterator, Any
+from typing import Self, Iterator, Any, TYPE_CHECKING
 
 from kizuna.core.validation import validate_int
+
+if TYPE_CHECKING:
+    from kizuna.core.datatypes import Vector2
+
 
 type IVector2Like = tuple[int, int] | list[int]
 """Alias for a tuple or list that represents an integer 2D vector.
@@ -46,7 +50,8 @@ class IVector2:
 
     ..  important::
 
-        :py:type:`IVector2` and :py:type:`Vector2` instances cannot be operated together.
+        :py:type:`IVector2` and :py:type:`Vector2` instances cannot be operated together. Use the
+        :py:meth:`vector2_to_ivector` method to convert an Vector2 to a IVector2.
     """
     x: int
     y: int
@@ -242,3 +247,12 @@ def validate_ivector2_or_scalar(value: IVector2 | IVector2Like | int) -> IVector
         raise TypeError(
             f'Value must be int, Vector2, or convertible to Vector2, got {type(value).__qualname__}.'
         )
+
+
+def vector2_to_ivector(value: 'Vector2') -> IVector2:
+    """Convert a Vector2 to a IVector2.
+
+    :param value: The value to convert.
+    :return: The converted value.
+    """
+    return IVector2(round(value.x), round(value.y))
