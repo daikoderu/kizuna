@@ -26,6 +26,7 @@ class IVector2:
     ======================== =================================== ======================================
     ``u + v``                ``Vector2(u.x + v.x, u.y + v.y)``   Component-wise addition
     ``u - v``                ``Vector2(u.x - v.x, u.y - v.y)``   Component-wise subtraction
+    ``+v``                   ``v``                               Unary plus (identity)
     ``-v``                   ``Vector2(-v.x, -v.y)``             Unary minus (opposite vector)
     ``k * v`` or ``v * k``   ``Vector2(k * v.x, k * v.y)``       Multiplication by a scalar
     ``u * v``                ``Vector2(u.x * v.x, u.y * v.y)``   Component-wise multiplication
@@ -75,6 +76,13 @@ class IVector2:
         """
         other = validate_ivector2(other)
         return IVector2(self.x + other.x, self.y + other.y)
+
+    def __pos__(self) -> Self:
+        """Apply the unary plus operator to the vector.
+
+        :return: The same vector.
+        """
+        return self
 
     def __sub__(self, other: Self | IVector2Like) -> Self:
         """Component-wise subtraction of two vectors.

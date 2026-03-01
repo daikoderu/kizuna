@@ -126,6 +126,17 @@ class IVector2Tests(unittest.TestCase):
         self.assertEqual(IVector2(5, 0), result_a)
         self.assertEqual(IVector2(5, 0), result_b)
 
+    def test_ivector2_pos(self):
+        # Arrange
+        v = IVector2(1, 2)
+
+        # Act
+        result = +v
+
+        # Assert
+        self.assertIsInstance(result, IVector2)
+        self.assertEqual(IVector2(1, 2), result)
+
     def test_ivector2_sub_ivector2(self):
         # Arrange
         v = IVector2(1, 2)

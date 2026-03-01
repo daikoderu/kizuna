@@ -126,6 +126,17 @@ class Vector2Tests(unittest.TestCase):
         self.assertEqual(Vector2(5, 0.5), result_a)
         self.assertEqual(Vector2(5, 0.5), result_b)
 
+    def test_ivector2_pos(self):
+        # Arrange
+        v = Vector2(1, 2)
+
+        # Act
+        result = +v
+
+        # Assert
+        self.assertIsInstance(result, Vector2)
+        self.assertEqual(Vector2(1, 2), result)
+
     def test_vector2_sub_vector2(self):
         # Arrange
         v = Vector2(1, 2.5)
