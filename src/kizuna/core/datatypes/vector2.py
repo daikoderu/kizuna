@@ -122,6 +122,8 @@ class Vector2:
 
     def __str__(self) -> str:
         """String representation of the vector.
+
+        :return: The string representation of the color.
         """
         return f"({self.x}, {self.y})"
 

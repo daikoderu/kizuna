@@ -73,6 +73,8 @@ class Color:
 
     def __str__(self):
         """String representation of the color.
+
+        :return: The string representation of the color.
         """
         return f"rgba({self.r}, {self.g}, {self.b}, {self.a})"
 
