@@ -25,7 +25,7 @@ class Vector2Tests(unittest.TestCase):
         # Assert
         self.assertIsInstance(v_tuple[0], float)
         self.assertIsInstance(v_tuple[1], float)
-        self.assertEqual(v_tuple, (1.0, 2.5))
+        self.assertEqual((1.0, 2.5), v_tuple)
 
     def test_vector2_eq_with_vectors(self):
         # Arrange
@@ -93,8 +93,8 @@ class Vector2Tests(unittest.TestCase):
         # Assert
         self.assertIsInstance(result_a, Vector2)
         self.assertIsInstance(result_b, Vector2)
-        self.assertEqual(result_a, Vector2(5, 0.5))
-        self.assertEqual(result_b, Vector2(5, 0.5))
+        self.assertEqual(Vector2(5, 0.5), result_a)
+        self.assertEqual(Vector2(5, 0.5), result_b)
 
     def test_vector2_add_tuple(self):
         # Arrange
@@ -108,8 +108,8 @@ class Vector2Tests(unittest.TestCase):
         # Assert
         self.assertIsInstance(result_a, Vector2)
         self.assertIsInstance(result_b, Vector2)
-        self.assertEqual(result_a, Vector2(5, 0.5))
-        self.assertEqual(result_b, Vector2(5, 0.5))
+        self.assertEqual(Vector2(5, 0.5), result_a)
+        self.assertEqual(Vector2(5, 0.5), result_b)
 
     def test_vector2_add_list(self):
         # Arrange
@@ -123,8 +123,8 @@ class Vector2Tests(unittest.TestCase):
         # Assert
         self.assertIsInstance(result_a, Vector2)
         self.assertIsInstance(result_b, Vector2)
-        self.assertEqual(result_a, Vector2(5, 0.5))
-        self.assertEqual(result_b, Vector2(5, 0.5))
+        self.assertEqual(Vector2(5, 0.5), result_a)
+        self.assertEqual(Vector2(5, 0.5), result_b)
 
     def test_vector2_sub_vector2(self):
         # Arrange
@@ -138,8 +138,8 @@ class Vector2Tests(unittest.TestCase):
         # Assert
         self.assertIsInstance(result_a, Vector2)
         self.assertIsInstance(result_b, Vector2)
-        self.assertEqual(result_a, Vector2(-3, 4.5))
-        self.assertEqual(result_b, Vector2(3, -4.5))
+        self.assertEqual(Vector2(-3, 4.5), result_a)
+        self.assertEqual(Vector2(3, -4.5), result_b)
 
     def test_vector2_sub_tuple(self):
         # Arrange
@@ -153,8 +153,8 @@ class Vector2Tests(unittest.TestCase):
         # Assert
         self.assertIsInstance(result_a, Vector2)
         self.assertIsInstance(result_b, Vector2)
-        self.assertEqual(result_a, Vector2(-3, 4.5))
-        self.assertEqual(result_b, Vector2(3, -4.5))
+        self.assertEqual(Vector2(-3, 4.5), result_a)
+        self.assertEqual(Vector2(3, -4.5), result_b)
 
     def test_vector2_sub_list(self):
         # Arrange
@@ -168,8 +168,8 @@ class Vector2Tests(unittest.TestCase):
         # Assert
         self.assertIsInstance(result_a, Vector2)
         self.assertIsInstance(result_b, Vector2)
-        self.assertEqual(result_a, Vector2(-3, 4.5))
-        self.assertEqual(result_b, Vector2(3, -4.5))
+        self.assertEqual(Vector2(-3, 4.5), result_a)
+        self.assertEqual(Vector2(3, -4.5), result_b)
 
     def test_vector2_neg(self):
         # Arrange
@@ -180,7 +180,7 @@ class Vector2Tests(unittest.TestCase):
 
         # Assert
         self.assertIsInstance(result, Vector2)
-        self.assertEqual(result, Vector2(-1, -2.5))
+        self.assertEqual(Vector2(-1, -2.5), result)
 
     def test_vector2_mul_by_scalar(self):
         # Arrange
@@ -194,8 +194,8 @@ class Vector2Tests(unittest.TestCase):
         # Assert
         self.assertIsInstance(result_a, Vector2)
         self.assertIsInstance(result_b, Vector2)
-        self.assertEqual(result_a, Vector2(3, 7.5))
-        self.assertEqual(result_b, Vector2(3, 7.5))
+        self.assertEqual(Vector2(3, 7.5), result_a)
+        self.assertEqual(Vector2(3, 7.5), result_b)
 
     def test_vector2_mul_vector2(self):
         # Arrange
@@ -209,8 +209,8 @@ class Vector2Tests(unittest.TestCase):
         # Assert
         self.assertIsInstance(result_a, Vector2)
         self.assertIsInstance(result_b, Vector2)
-        self.assertEqual(result_a, Vector2(4, -5))
-        self.assertEqual(result_b, Vector2(4, -5))
+        self.assertEqual(Vector2(4, -5), result_a)
+        self.assertEqual(Vector2(4, -5), result_b)
 
     def test_vector2_mul_tuple(self):
         # Arrange
@@ -224,8 +224,8 @@ class Vector2Tests(unittest.TestCase):
         # Assert
         self.assertIsInstance(result_a, Vector2)
         self.assertIsInstance(result_b, Vector2)
-        self.assertEqual(result_a, Vector2(4, -5))
-        self.assertEqual(result_b, Vector2(4, -5))
+        self.assertEqual(Vector2(4, -5), result_a)
+        self.assertEqual(Vector2(4, -5), result_b)
 
     def test_vector2_mul_list(self):
         # Arrange
@@ -239,8 +239,8 @@ class Vector2Tests(unittest.TestCase):
         # Assert
         self.assertIsInstance(result_a, Vector2)
         self.assertIsInstance(result_b, Vector2)
-        self.assertEqual(result_a, Vector2(4, -5))
-        self.assertEqual(result_b, Vector2(4, -5))
+        self.assertEqual(Vector2(4, -5), result_a)
+        self.assertEqual(Vector2(4, -5), result_b)
 
     def test_vector2_div_by_scalar(self):
         # Arrange
@@ -254,8 +254,8 @@ class Vector2Tests(unittest.TestCase):
         # Assert
         self.assertIsInstance(result_a, Vector2)
         self.assertIsInstance(result_b, Vector2)
-        self.assertEqual(result_a, Vector2(2, -2))
-        self.assertEqual(result_b, Vector2(1 / 2, -1 / 2))
+        self.assertEqual(Vector2(2, -2), result_a)
+        self.assertEqual(Vector2(1 / 2, -1 / 2), result_b)
 
     def test_vector2_div_vector2(self):
         # Arrange
@@ -269,8 +269,8 @@ class Vector2Tests(unittest.TestCase):
         # Assert
         self.assertIsInstance(result_a, Vector2)
         self.assertIsInstance(result_b, Vector2)
-        self.assertEqual(result_a, Vector2(3, -3))
-        self.assertEqual(result_b, Vector2(1 / 3, -1 / 3))
+        self.assertEqual(Vector2(3, -3), result_a)
+        self.assertEqual(Vector2(1 / 3, -1 / 3), result_b)
 
     def test_vector2_div_tuple(self):
         # Arrange
@@ -284,8 +284,8 @@ class Vector2Tests(unittest.TestCase):
         # Assert
         self.assertIsInstance(result_a, Vector2)
         self.assertIsInstance(result_b, Vector2)
-        self.assertEqual(result_a, Vector2(3, -3))
-        self.assertEqual(result_b, Vector2(1 / 3, -1 / 3))
+        self.assertEqual(Vector2(3, -3), result_a)
+        self.assertEqual(Vector2(1 / 3, -1 / 3), result_b)
 
     def test_vector2_div_list(self):
         # Arrange
@@ -299,5 +299,5 @@ class Vector2Tests(unittest.TestCase):
         # Assert
         self.assertIsInstance(result_a, Vector2)
         self.assertIsInstance(result_b, Vector2)
-        self.assertEqual(result_a, Vector2(3, -3))
-        self.assertEqual(result_b, Vector2(1 / 3, -1 / 3))
+        self.assertEqual(Vector2(3, -3), result_a)
+        self.assertEqual(Vector2(1 / 3, -1 / 3), result_b)

@@ -1,7 +1,7 @@
 from importlib import import_module
 from typing import Any
 
-from kizuna.core.datatypes import validate_vector2
+from kizuna.core.datatypes import validate_ivector2
 from kizuna.core.validation import validate_str, validate_and_import_module_path
 from kizuna.management.exceptions import SettingsNotFoundError, SettingsValidationError
 
@@ -16,7 +16,7 @@ class Settings:
         self._settings = {}
         self._setting_validators = {
             'WINDOW_CAPTION': validate_str,
-            'WINDOW_SIZE': validate_vector2,
+            'WINDOW_SIZE': validate_ivector2,
             'INITIAL_SCENE': validate_and_import_module_path,
         }
 
