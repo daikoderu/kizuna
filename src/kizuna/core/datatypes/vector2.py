@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import Self, Iterator, Any
 
+from kizuna.core.validation import validate_float
+
 type Vector2Tuple = tuple[int | float, int | float]
 """Alias for a tuple that represents a 2D vector.
 """
@@ -17,6 +19,12 @@ class Vector2:
     """
     x: float
     y: float
+
+    def __post_init__(self):
+        """Validate color components.
+        """
+        self.x = validate_float(self.x)
+        self.y = validate_float(self.y)
 
     @property
     def as_tuple(self) -> tuple[float, float]:

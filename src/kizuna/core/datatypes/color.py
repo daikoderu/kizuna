@@ -24,12 +24,6 @@ class Color:
     b: int
     a: int = 255
 
-    @property
-    def as_tuple(self) -> tuple[int, int, int, int]:
-        """Return the color as a normal tuple.
-        """
-        return self.r, self.g, self.b, self.a
-
     def __post_init__(self):
         """Validate color components.
         """
@@ -37,6 +31,12 @@ class Color:
         self.g = clamp_int(validate_int(self.g), 0, 255)
         self.b = clamp_int(validate_int(self.b), 0, 255)
         self.a = clamp_int(validate_int(self.a), 0, 255)
+
+    @property
+    def as_tuple(self) -> tuple[int, int, int, int]:
+        """Return the color as a normal tuple.
+        """
+        return self.r, self.g, self.b, self.a
 
     def __iter__(self):
         """Iterator over the color components.

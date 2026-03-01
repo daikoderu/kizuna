@@ -57,7 +57,7 @@ def validate_float(value: int | float) -> float:
     """
     if not isinstance(value, int | float):
         raise TypeError(f'Value must be int or float, got {type(value).__qualname__}.')
-    return value
+    return float(value)
 
 
 # ---- STRING VALIDATORS ----
