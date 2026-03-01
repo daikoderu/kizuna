@@ -5,4 +5,5 @@
 
 installation
 changelog
+api_reference/index
 ```
