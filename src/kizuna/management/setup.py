@@ -19,7 +19,7 @@ def _run():
     """Launch the application.
     """
     window = pyglet.window.Window()
-    window.size = settings.WINDOW_SIZE.as_tuple
+    window.size = tuple(settings.WINDOW_SIZE)
     window.set_caption(settings.WINDOW_CAPTION)
 
     current_scene = settings.INITIAL_SCENE

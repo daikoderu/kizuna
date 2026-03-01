@@ -4,8 +4,8 @@ from typing import Any
 from kizuna.core.validation import validate_int, clamp_int
 
 
-type ColorTuple = tuple[int, int, int, int] | tuple[int, int, int]
-"""Alias for a tuple that represents a color.
+type ColorLike = tuple[int, int, int, int] | tuple[int, int, int] | list[int]
+"""Alias for a tuple or list that represents a color.
 """
 
 
@@ -14,7 +14,7 @@ class Color:
     """Tuples of four integers between 0 and 255 to define colors in ``(r, g, b, a)`` format.
 
     For the sake of brevity and consistency, any function parameter or attribute expected to be of type Color can
-    also be set to a tuple of four integers. It will be converted to an instance of this class.
+    also be set to a tuple or list of four integers. It will be converted to an instance of this class.
 
     Out-of-bounds values are automatically clamped. If the class is called with three values, these correspond to
     red, green, and blue, respectively, and the alpha (transparency) is set to 255 (fully opaque).
@@ -79,7 +79,7 @@ class Color:
         return f"rgba({self.r}, {self.g}, {self.b}, {self.a})"
 
 
-def validate_color(value: Color | ColorTuple) -> Color:
+def validate_color(value: Color | ColorLike) -> Color:
     """Validate that the given value is a color or can be converted to a color.
 
     :param value: The value to validate.
@@ -89,7 +89,7 @@ def validate_color(value: Color | ColorTuple) -> Color:
     if isinstance(value, Color):
         return value
     elif (
-        isinstance(value, tuple) and (
+        isinstance(value, tuple | list) and (
             (
                 len(value) == 4
                 and isinstance(value[0], int)
