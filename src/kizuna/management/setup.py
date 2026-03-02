@@ -4,37 +4,17 @@ from pathlib import Path
 import pyglet
 
 from kizuna.config import settings
-
-
-def _setup_assets(assets_path: Path):
-    """Set up the assets directory for Pyglet.
-
-    :param assets_path: The path to the asset directory.
-    """
-    pyglet.resource.path = [str(assets_path)]
-    pyglet.resource.reindex()
-
-
-def _run():
-    """Launch the application.
-    """
-    window = pyglet.window.Window()
-    window.size = tuple(settings.WINDOW_SIZE)
-    window.set_caption(settings.WINDOW_CAPTION)
-
-    current_scene = settings.INITIAL_SCENE
-
-    @window.event
-    def on_draw():
-        window.clear()
-        for drawable in current_scene.drawables:
-            drawable.on_draw()
-
-    pyglet.app.run()
+from kizuna.management.game_loop import launch
 
 
 def initialize(base_directory: Path, standalone: bool):
     """Initialize the application.
+
+    This is used to validate settings and initialize anything necessary for Kizuna's CLI to work smoothly with the
+    project.
+
+    :param base_directory: The base directory of the project.
+    :param standalone: If true, runs the application in standalone mode.
     """
     # Add the base directory to the PYTHONPATH.
     sys.path.insert(0, str(base_directory))
@@ -54,4 +34,4 @@ def bootstrap(base_directory: Path, standalone: bool):
     :param standalone: If true, runs the application in standalone mode.
     """
     initialize(base_directory, standalone)
-    _run()
+    launch()

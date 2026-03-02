@@ -1,9 +1,11 @@
 """Compilation of various validation functions used throughout the entire framework.
+
+All validations raise either :py:class:`ValueError` or :py:class:`TypeError`.
 """
 
 import re
 from importlib import import_module
-from typing import Any
+from typing import Any, Callable
 
 
 # ---- TYPE VALIDATORS ----
@@ -49,7 +51,7 @@ def clamp_int(value: int, min_value: int, max_value: int) -> int:
 
 
 def validate_float(value: int | float) -> float:
-    """Validate that the given value can be converted to a float.
+    """Validate that the given value is a float or can be converted to a float.
 
     :param value: The value to validate.
     :return: The validated value.
@@ -58,6 +60,19 @@ def validate_float(value: int | float) -> float:
     if not isinstance(value, int | float):
         raise TypeError(f'Value must be int or float, got {type(value).__qualname__}.')
     return float(value)
+
+def validate_positive_float(value: int | float) -> float:
+    """Validate that the given value is a positive floating-point number.
+
+    :param value: The value to validate.
+    :return: The validated value.
+    :raise TypeError: If the value cannot be converted to a float.
+    :raise TypeError: If the value is not positive.
+    """
+    value = validate_float(value)
+    if value <= 0:
+        raise ValueError(f'Value must be positive.')
+    return value
 
 
 # ---- STRING VALIDATORS ----
@@ -119,10 +134,72 @@ def validate_and_import_module_path(value: str) -> Any:
     except AttributeError as e:
         raise ValueError(f'Module "{module_path}" does not define "{element}".') from e
 
-    return module
-
 
 # ---- COLLECTION VALIDATORS ----
+
+def validate_set(value: set, element_validation: Callable[[Any], Any] | None = None) -> set:
+    """Validate that the given value is a set.
+
+    Optionally, another validation function can be passed to apply it to each element of the set.
+
+    :param value: The value to validate.
+    :param element_validation: The function that validates the elements of the input set.
+    :return: The validated value.
+    :raise TypeError: If the value is not a set, or if one of the elements does not satisfy validation.
+    :raise ValueError: If one of the elements does not satisfy validation.
+    """
+    value = validate_type(value, set)
+
+    # Validate each element.
+    if element_validation is not None:
+        validated = set()
+        for element in value:
+            try:
+                validated.add(element_validation(element))
+            except TypeError as e:
+                raise TypeError(f'Invalid element "{repr(element)}": {e}') from e
+            except ValueError as e:
+                raise ValueError(f'Invalid element "{repr(element)}": {e}') from e
+        return validated
+
+    return value
+
+def validate_list(value: list, distinct: bool = False, child: Callable[[Any], Any] | None = None) -> list:
+    """Validate that the given value is a list.
+
+    Optionally, another validation function can be passed to apply it to each element of the set.
+
+    :param value: The value to validate.
+    :param distinct: If True, the elements of the input list must be distinct from each other. This constraint
+        requires the elements to be hashable.
+    :param child: The function that validates the elements of the input list.
+    :return: The validated value.
+    :raise TypeError: If the value is not a list, or if one of the elements does not satisfy validation.
+    :raise ValueError: If ``distinct`` is true and the list contains duplicates, or if one of the elements does not
+        satisfy validation.
+    """
+    value = validate_type(value, set)
+
+    # Check for duplicates.
+    if distinct and len(value) >= 2:
+        sorted_list = sorted(value, key=hash)
+        for i in range(len(value) - 1):
+            if sorted_list[i] != sorted_list[i + 1]:
+                raise ValueError(f'List cannot contain duplicate elements.')
+
+    # Validate each element.
+    if child is not None:
+        validated = []
+        for element in value:
+            try:
+                validated.append(child(element))
+            except TypeError as e:
+                raise TypeError(f'Invalid element "{repr(element)}": {e}') from e
+            except ValueError as e:
+                raise ValueError(f'Invalid element "{repr(element)}": {e}') from e
+        return validated
+
+    return value
 
 def validate_dict(value: dict) -> dict:
     """Validate that the given value is a dictionary.
