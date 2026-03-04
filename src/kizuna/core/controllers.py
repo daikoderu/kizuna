@@ -15,13 +15,13 @@ class Controller:
     def on_step(self, dt: float):
         """Called at each step of the game loop, to implement the game logic that must happen at each step.
 
-        :param dt: Time step or "delta time", in seconds. This is the time passed between time steps. Every time
+        :param dt: Time step or "delta time", in seconds. This is the actual time passed between time steps. Every time
             sensitive operation, such as moving a character, should be multiplied by this value to get a consistent
             speed.
         """
         raise NotImplementedError()
 
     def on_draw(self):
-        """Called at the end of each step of the game loop, to draw the game.
+        """Called to draw a frame of the game screen.
         """
         raise NotImplementedError()

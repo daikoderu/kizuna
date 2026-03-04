@@ -18,7 +18,8 @@ class Settings:
             'WINDOW_CAPTION': validate_str,
             'WINDOW_SIZE': validate_ivector2,
             'CONTROLLERS': lambda v: validate_list(v, distinct=True, child=validate_and_import_module_path),
-            'TARGET_FPS': validate_positive_float,
+            'STEPS_PER_SECOND': validate_positive_float,
+            'FRAMES_PER_SECOND': validate_positive_float,
         }
         self._setting_defaults = {}
 

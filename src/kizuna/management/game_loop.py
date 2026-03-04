@@ -19,7 +19,7 @@ def launch():
         controller.on_init()
 
     # Schedule update calls.
-    pyglet.clock.schedule_interval(lambda dt: step(dt, controllers), 1 / settings.TARGET_FPS)
+    pyglet.clock.schedule_interval(lambda dt: step(dt, controllers), 1 / settings.STEPS_PER_SECOND)
 
     # Attach the draw event handler.
     @window.event
@@ -27,7 +27,7 @@ def launch():
         draw(window, controllers)
 
     # Run the app.
-    pyglet.app.run(1 / settings.TARGET_FPS)
+    pyglet.app.run(1 / settings.FRAMES_PER_SECOND)
 
 
 def step(dt: float, controllers: list[Controller]):
