@@ -1,3 +1,4 @@
+import math
 from dataclasses import dataclass
 from typing import Self, Iterator, Any, TYPE_CHECKING
 
@@ -85,9 +86,9 @@ class Vector2:
     def __pos__(self) -> Self:
         """Apply the unary plus operator to the vector.
 
-        :return: The same vector.
+        :return: A copy of the vector.
         """
-        return self
+        return self.copy()
 
     def __sub__(self, other: Self | Vector2Like) -> Self:
         """Component-wise subtraction of two vectors.
@@ -207,6 +208,46 @@ class Vector2:
         :return: The string representation of the color.
         """
         return f"({self.x}, {self.y})"
+
+    def __copy__(self) -> Self:
+        """Make a copy of the vector.
+
+        :return: The copy of the vector.
+        """
+        return Vector2(self.x, self.y)
+
+    def __deepcopy__(self, memo: dict) -> Self:
+        """Make a copy of the vector.
+
+        :return: The copy of the vector.
+        """
+        return Vector2(self.x, self.y)
+
+    def copy(self) -> Self:
+        """Make a copy of the vector.
+
+        :return: The copy of the vector.
+        """
+        return self.__copy__()
+
+    @property
+    def length(self) -> float:
+        """Return the length of the vector.
+
+        :return: The length of the vector.
+        """
+        return math.sqrt(self.x ** 2 + self.y ** 2)
+
+    @property
+    def length_squared(self) -> float:
+        """Return the length of the vector squared.
+
+        If the length itself is not required (e.g. when comparing distances), this method is more efficient since it
+        does not need to compute the square root.
+
+        :return: The length of the vector squared.1
+        """
+        return self.x ** 2 + self.y ** 2
 
 
 def validate_vector2(value: Vector2 | Vector2Like) -> Vector2:

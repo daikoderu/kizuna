@@ -1,51 +1,43 @@
 import pyglet.text
 
-from kizuna.core.datatypes import Vector2, Color
+from kizuna.core.assets import ImageAsset
+from kizuna.core.datatypes import Vector2
+from kizuna.rendering.batches import DrawBatch
 
 
 class Drawable:
-    """Base class for anything that will be rendered on screen.
-    """
 
-    def on_draw(self):
+    def __init__(self, visible: bool = True):
+        self.visible = visible
+
+    def prepare_for_batch(self, batch: DrawBatch):
         raise NotImplementedError()
 
 
-class Text(Drawable):
-    text: str
-    position: Vector2
-    color: Color
+class ImageDrawable(Drawable):
 
     def __init__(
         self,
-        text: str,
-        position: Vector2,
-        color: Color,
+        asset: ImageAsset,
+        position: Vector2 | None = None,
+        rotation: float | None = None,
+        visible: bool = True,
     ):
-        self.text = text
-        self.position = position
-        self.color = color
-        self._pyglet_text = None
+        super().__init__(visible)
+        self.asset = asset
+        self.position = position if position is not None else Vector2(0, 0)
+        self.rotation = rotation if rotation is not None else 0
+        self._pyglet_instance = None
 
-    def on_draw(self):
-        self._update_element()
-        self._pyglet_text.draw()
+    @property
+    def _pyglet(self):
+        if self._pyglet_instance is None:
+            self._pyglet_instance = pyglet.sprite.Sprite(self.asset._pyglet)
+        return self._pyglet_instance
 
-    def _update_element(self):
-        if self._pyglet_text is None:
-            self._pyglet_text = pyglet.text.Label()
-        self._pyglet_text.text = self.text
-        self._pyglet_text.x, self._pyglet_text.y = self.position
-        self._pyglet_text.color = self.color.as_tuple
-
-
-class Image(Drawable):
-
-    def __init__(
-        self,
-        assets_path: str,
-    ):
-        self._pyglet_image = pyglet.resource.image(assets_path)
-
-    def on_draw(self):
-        self._pyglet_image.blit(0, 0)
+    def prepare_draw(self, batch: DrawBatch):
+        if not self.visible:
+            return
+        self._pyglet.batch = batch._pyglet if self.visible else None
+        self._pyglet.position = self.position.x, self.position.y, 0.0
+        self._pyglet.rotation = -self.rotation

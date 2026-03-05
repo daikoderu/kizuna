@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Self
 
 from kizuna.core.validation import validate_int, clamp_int
 
@@ -77,6 +77,13 @@ class Color:
         :return: The string representation of the color.
         """
         return f"rgba({self.r}, {self.g}, {self.b}, {self.a})"
+
+    def __copy__(self) -> Self:
+        """Make a copy of the color.
+
+        :return: The copy of the color.
+        """
+        return Color(self.r, self.g, self.b, self.a)
 
 
 def validate_color(value: Color | ColorLike) -> Color:

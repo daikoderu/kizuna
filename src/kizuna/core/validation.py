@@ -128,9 +128,11 @@ def validate_and_import_module_path(value: str) -> Any:
 
     try:
         module = import_module(module_path)
-        return getattr(module, element)
     except ImportError as e:
         raise ValueError(f'Could not import "{value}".') from e
+
+    try:
+        return getattr(module, element)
     except AttributeError as e:
         raise ValueError(f'Module "{module_path}" does not define "{element}".') from e
 
@@ -178,7 +180,7 @@ def validate_list(value: list, distinct: bool = False, child: Callable[[Any], An
     :raise ValueError: If ``distinct`` is true and the list contains duplicates, or if one of the elements does not
         satisfy validation.
     """
-    value = validate_type(value, set)
+    value = validate_type(value, list)
 
     # Check for duplicates.
     if distinct and len(value) >= 2:

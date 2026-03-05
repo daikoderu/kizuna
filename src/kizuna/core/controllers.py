@@ -10,7 +10,7 @@ class Controller:
     def on_init(self):
         """Called when the controller class is initialized at the start of the game loop.
         """
-        raise NotImplementedError()
+        ...
 
     def on_step(self, dt: float):
         """Called at each step of the game loop, to implement the game logic that must happen at each step.
@@ -19,9 +19,9 @@ class Controller:
             sensitive operation, such as moving a character, should be multiplied by this value to get a consistent
             speed.
         """
-        raise NotImplementedError()
+        ...
 
     def on_draw(self):
         """Called to draw a frame of the game screen.
         """
-        raise NotImplementedError()
+        ...
