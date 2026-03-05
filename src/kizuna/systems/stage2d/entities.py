@@ -1,5 +1,3 @@
-import pyglet
-
 from kizuna.core.assets import ImageAsset
 from kizuna.core.datatypes import Vector2
 from kizuna.rendering.batches import DrawBatch
@@ -16,10 +14,9 @@ class Sprite:
         rotation_offset: float | None = None,
     ):
         self.asset = asset
+        self.batch = batch if batch is not None else DrawBatch()
         self.position_offset = position_offset if position_offset is not None else Vector2(0.0, 0.0)
         self.rotation_offset = rotation_offset if rotation_offset is not None else 0.0
-        self._sprite = pyglet.sprite.Sprite(self.asset._pyglet)
-        self.batch = batch if batch is not None else DrawBatch()
 
 
 class Entity2D:
