@@ -44,3 +44,9 @@ class Asset:
         """Implement this method to handle unloading the asset from memory.
         """
         raise NotImplementedError()
+
+    def __str__(self):
+        return repr(self)
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}("{self.path}", loaded={self.is_loaded})'

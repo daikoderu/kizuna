@@ -83,18 +83,13 @@ class Color:
         return not self == other
 
     def __hash__(self) -> int:
-        """Hash code of the color.
-
-        :return: The hash code of the color.
-        """
         return hash(tuple(self))
 
     def __str__(self):
-        """String representation of the color.
+        return f'rgba({self.r}, {self.g}, {self.b}, {self.a})'
 
-        :return: The string representation of the color.
-        """
-        return f"rgba({self.r}, {self.g}, {self.b}, {self.a})"
+    def __repr__(self):
+        return f'rgba({self.r}, {self.g}, {self.b}, {self.a})'
 
 
 def validate_color(value: ColorLike) -> Color:

@@ -1,6 +1,11 @@
+from typing import TypeVar
+
 from kizuna.core.controllers import Controller
 from kizuna.core.datatypes import Vector2
 from kizuna.systems.stage2d.entities import Entity2D
+
+
+E = TypeVar('E', bound=Entity2D)
 
 
 class Stage2DController(Controller):
@@ -17,10 +22,10 @@ class Stage2DController(Controller):
 
     def instantiate(
         self,
-        entity_class: type[Entity2D],
+        entity_class: type[E],
         position: Vector2 | None = None,
         rotation: float | None = None,
-    ) -> Entity2D:
+    ) -> E:
         instance = entity_class(position, rotation)
         instance._controller = self
         self._entities.add(instance)

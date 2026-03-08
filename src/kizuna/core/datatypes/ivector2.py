@@ -235,18 +235,13 @@ class IVector2:
         return not self == other
 
     def __hash__(self) -> int:
-        """Hash code of the vector.
-
-        :return: The hash code of the vector.
-        """
         return hash(tuple(self))
 
     def __str__(self) -> str:
-        """String representation of the vector.
+        return f'({self.x}, {self.y})'
 
-        :return: The string representation of the color.
-        """
-        return f"({self.x}, {self.y})"
+    def __repr__(self):
+        return f'IVector2({self.x}, {self.y})'
 
 
 def validate_ivector2(value: IVector2Like) -> IVector2:

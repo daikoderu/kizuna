@@ -58,6 +58,18 @@ class Vector2:
         self._x = validate_float(x)
         self._y = validate_float(y)
 
+    @staticmethod
+    def lendir(length: float, direction: float) -> 'Vector2':
+        """Create a :type:`Vector2` with the given :meth:`length` and :meth:`direction`.
+
+        :param length: The length of the vector.
+        :param direction: The direction of the vector, with respect to the positive side of the X-axis,
+            counterclockwise in degrees.
+        :return: A new vector with the result.
+        """
+        direction_rad = direction * math.pi / 180
+        return length * Vector2(math.cos(direction_rad), math.sin(direction_rad))
+
     @property
     def x(self) -> float:
         """Return the *x*-component of the vector.
@@ -230,18 +242,13 @@ class Vector2:
         return not self == other
 
     def __hash__(self) -> int:
-        """Hash code of the vector.
-
-        :return: The hash code of the vector.
-        """
         return hash(tuple(self))
 
     def __str__(self) -> str:
-        """String representation of the vector.
+        return f'({self.x}, {self.y})'
 
-        :return: The string representation of the color.
-        """
-        return f"({self.x}, {self.y})"
+    def __repr__(self):
+        return f'Vector2({self.x}, {self.y})'
 
 
 def validate_vector2(value: Vector2Like) -> Vector2:

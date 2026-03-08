@@ -2,10 +2,10 @@ from kizuna.core.assets import ImageAsset
 from kizuna.core.datatypes import Vector2, validate_vector2
 from kizuna.core.validation import validate_float
 from kizuna.rendering.batches import DrawBatch
-from kizuna.rendering.drawables import ImageDrawable
+from kizuna.rendering.drawables import SpriteDrawable
 
 
-class Sprite:
+class SpriteSpec:
 
     def __init__(
         self,
@@ -21,7 +21,7 @@ class Sprite:
 
 
 class Entity2D:
-    sprites: list[Sprite] = []
+    sprite_specs: list[SpriteSpec] = []
 
     def __init__(
         self,
@@ -31,7 +31,7 @@ class Entity2D:
         self.position = validate_vector2(position) if position is not None else Vector2(0.0, 0.0)
         self.rotation = validate_float(rotation) if rotation is not None else 0.0
         self._controller = None
-        self._drawables = [ImageDrawable(sprite.asset) for sprite in self.sprites]
+        self.sprites = [SpriteDrawable(sprite.asset) for sprite in self.sprite_specs]
 
     def __str__(self) -> str:
         return repr(self)
@@ -45,10 +45,10 @@ class Entity2D:
 
     @property
     def batches(self) -> set[DrawBatch]:
-        return set(sprite.batch for sprite in self.sprites)
+        return set(sprite.batch for sprite in self.sprite_specs)
 
     def prepare_draw(self):
-        for sprite, drawable in zip(self.sprites, self._drawables):
-            drawable.position = self.position + sprite.position_offset
-            drawable.rotation = self.rotation + sprite.rotation_offset
-            drawable.on_prepare_draw(sprite.batch)
+        for spec, sprite in zip(self.sprite_specs, self.sprites):
+            sprite.position = self.position + spec.position_offset
+            sprite.rotation = self.rotation + spec.rotation_offset
+            sprite.on_prepare_draw(spec.batch)

@@ -4,9 +4,9 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from kizuna.core.assets import ImageAsset
-    from kizuna.management.settings import Settings
+    from kizuna.config import Settings
     from kizuna.rendering.batches import DrawBatch
-    from kizuna.rendering.drawables import ImageDrawable
+    from kizuna.rendering.drawables import SpriteDrawable
 
 
 class Backend:
@@ -26,5 +26,5 @@ class Backend:
     def draw_batch(self, batch: 'DrawBatch'):
         raise NotImplementedError()
 
-    def prepare_draw_sprite(self, drawable: 'ImageDrawable', batch: 'DrawBatch'):
+    def prepare_draw_sprite(self, drawable: 'SpriteDrawable', batch: 'DrawBatch'):
         raise NotImplementedError()
