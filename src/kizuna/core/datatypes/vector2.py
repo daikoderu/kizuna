@@ -1,5 +1,4 @@
 import math
-from dataclasses import dataclass
 from typing import Self, Iterator, Any, TYPE_CHECKING
 
 from kizuna.core.validation import validate_float
@@ -8,21 +7,20 @@ if TYPE_CHECKING:
     from kizuna.core.datatypes import IVector2
 
 
-type Vector2Like = tuple[int | float, int | float] | list[int | float]
+type Vector2Like = Vector2 | tuple[int | float, int | float] | list[int | float]
 """Alias for a tuple or list that represents a floating-point 2D vector.
 
-Objects that match this type may be passed as function parameters or attributes where a :py:type:`Vector2` is expected,
+Objects that match this type may be passed as function parameters or attributes where a :type:`Vector2` is expected,
 and are automatically converted.
 """
 
 
-@dataclass
 class Vector2:
     """Tuples of two floats for coordinates ``(x, y)`` and displacements in a 2D space.
 
     For the sake of brevity and consistency, any function parameter or attribute expected to be of type
-    :py:type:`Vector2` can also be set to a tuple or list of two integers and/or floats. It will be converted to an
-    instance of this class (see :py:type:`Vector2Like`).
+    :type:`Vector2` can also be set to a tuple or list of two integers and/or floats. It will be converted to an
+    instance of this class (see :type:`Vector2Like`).
 
     Let ``u`` and ``v`` be Vector2 instances and ``k`` a scalar (int or float). The following operators are supported:
 
@@ -51,19 +49,55 @@ class Vector2:
 
     ..  important::
 
-        :py:type:`IVector2` and :py:type:`Vector2` instances cannot be operated together. Use the
-        :py:meth:`ivector2_to_vector` method to convert an IVector2 to a Vector2.
+        :type:`Vector2` and :type:`~kizuna.core.datatypes.ivector2.IVector2` instances cannot be operated together.
+        Use the :meth:`ivector2_to_vector` method to convert an IVector2 to a Vector2.
     """
-    x: float
-    y: float
+    __slots__ = ('_x', '_y')
 
-    def __post_init__(self):
-        """Validate color components.
+    def __init__(self, x: float, y: float):
+        self._x = validate_float(x)
+        self._y = validate_float(y)
+
+    @property
+    def x(self) -> float:
+        """Return the *x*-component of the vector.
+
+        Negative *x* is to the left, positive *x* to the right.
         """
-        self.x = validate_float(self.x)
-        self.y = validate_float(self.y)
+        return self._x
 
-    def __add__(self, other: Self | Vector2Like) -> Self:
+    @property
+    def y(self) -> float:
+        """Return the *y*-component of the vector.
+
+        Negative *y* is downwards, positive *y* is upwards.
+        """
+        return self._y
+
+    @property
+    def length(self) -> float:
+        """Return the length of the vector.
+        """
+        return math.sqrt(self.x ** 2 + self.y ** 2)
+
+    @property
+    def length_squared(self) -> float:
+        """Return the length of the vector squared.
+
+        If the length itself is not required (e.g. when comparing distances), this method is more efficient since it
+        does not need to compute the square root.
+        """
+        return self.x ** 2 + self.y ** 2
+
+    @property
+    def direction(self) -> float:
+        """Get the angle of the vector with respect to the positive side of the X-axis, counterclockwise in degrees.
+
+        For the zero vector, this returns 0.0.
+        """
+        return math.atan2(self.y, self.x) * 180 / math.pi
+
+    def __add__(self, other: Vector2Like) -> Self:
         """Component-wise addition of two vectors.
 
         :param other: The other vector.
@@ -73,7 +107,7 @@ class Vector2:
         other = validate_vector2(other)
         return Vector2(self.x + other.x, self.y + other.y)
 
-    def __radd__(self, other: Self | Vector2Like) -> Self:
+    def __radd__(self, other: Vector2Like) -> Self:
         """Component-wise addition of two vectors.
 
         :param other: The other vector.
@@ -86,11 +120,11 @@ class Vector2:
     def __pos__(self) -> Self:
         """Apply the unary plus operator to the vector.
 
-        :return: A copy of the vector.
+        :return: The same vector.
         """
-        return self.copy()
+        return self
 
-    def __sub__(self, other: Self | Vector2Like) -> Self:
+    def __sub__(self, other: Vector2Like) -> Self:
         """Component-wise subtraction of two vectors.
 
         :param other: The other vector.
@@ -100,7 +134,7 @@ class Vector2:
         other = validate_vector2(other)
         return Vector2(self.x - other.x, self.y - other.y)
 
-    def __rsub__(self, other: Self | Vector2Like) -> Self:
+    def __rsub__(self, other: Vector2Like) -> Self:
         """Component-wise subtraction of two vectors.
 
         :param other: The other vector.
@@ -117,7 +151,7 @@ class Vector2:
         """
         return Vector2(-self.x, -self.y)
 
-    def __mul__(self, other: Self | Vector2Like | int | float) -> Self:
+    def __mul__(self, other: Vector2Like | int | float) -> Self:
         """Component-wise multiplication of two vectors or multiplication of a vector by a scalar.
 
         :param other: The other vector or scalar.
@@ -130,7 +164,7 @@ class Vector2:
         else:
             return Vector2(self.x * other, self.y * other)
 
-    def __rmul__(self, other: Self | Vector2Like | int | float) -> Self:
+    def __rmul__(self, other: Vector2Like | int | float) -> Self:
         """Component-wise multiplication of two vectors or multiplication of a scalar by a vector.
 
         :param other: The other vector or scalar.
@@ -143,7 +177,7 @@ class Vector2:
         else:
             return Vector2(self.x * other, self.y * other)
 
-    def __truediv__(self, other: Self | Vector2Like | int | float) -> Self:
+    def __truediv__(self, other: Vector2Like | int | float) -> Self:
         """Component-wise division of two vectors or division of a vector by a scalar.
 
         :param other: The other vector or scalar.
@@ -156,7 +190,7 @@ class Vector2:
         else:
             return Vector2(self.x / other, self.y / other)
 
-    def __rtruediv__(self, other: Self | Vector2Like | int | float) -> Self:
+    def __rtruediv__(self, other: Vector2Like | int | float) -> Self:
         """Component-wise division of two vectors or division of a scalar by a vector.
 
         :param other: The other vector or scalar.
@@ -209,48 +243,8 @@ class Vector2:
         """
         return f"({self.x}, {self.y})"
 
-    def __copy__(self) -> Self:
-        """Make a copy of the vector.
 
-        :return: The copy of the vector.
-        """
-        return Vector2(self.x, self.y)
-
-    def __deepcopy__(self, memo: dict) -> Self:
-        """Make a copy of the vector.
-
-        :return: The copy of the vector.
-        """
-        return Vector2(self.x, self.y)
-
-    def copy(self) -> Self:
-        """Make a copy of the vector.
-
-        :return: The copy of the vector.
-        """
-        return self.__copy__()
-
-    @property
-    def length(self) -> float:
-        """Return the length of the vector.
-
-        :return: The length of the vector.
-        """
-        return math.sqrt(self.x ** 2 + self.y ** 2)
-
-    @property
-    def length_squared(self) -> float:
-        """Return the length of the vector squared.
-
-        If the length itself is not required (e.g. when comparing distances), this method is more efficient since it
-        does not need to compute the square root.
-
-        :return: The length of the vector squared.1
-        """
-        return self.x ** 2 + self.y ** 2
-
-
-def validate_vector2(value: Vector2 | Vector2Like) -> Vector2:
+def validate_vector2(value: Vector2Like) -> Vector2:
     """Validate that the given value is a Vector2D or can be converted to a Vector2D.
 
     :param value: The value to validate.

@@ -4,6 +4,8 @@ from kizuna.systems.stage2d.entities import Entity2D
 
 
 class Stage2DController(Controller):
+    """Controller to manage a collection of entities representing different game objects.
+    """
     _entities: set[Entity2D] = set()
 
     def on_draw(self):

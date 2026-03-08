@@ -26,3 +26,11 @@ class SettingsValidationError(ManagementError):
     def __init__(self, errors: dict[str, TypeError | ValueError]):
         super().__init__('Errors detected in the settings.')
         self.errors = errors
+
+
+class BackendNotInstantiatedError(ManagementError):
+    """Exception raised when the backend is not instantiated.
+    """
+
+    def __init__(self):
+        super().__init__(f'The backend is not instantiated.')

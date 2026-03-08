@@ -1,5 +1,4 @@
 import math
-from dataclasses import dataclass
 from typing import Self, Iterator, Any, TYPE_CHECKING
 
 from kizuna.core.validation import validate_int
@@ -8,21 +7,20 @@ if TYPE_CHECKING:
     from kizuna.core.datatypes import Vector2
 
 
-type IVector2Like = tuple[int, int] | list[int]
+type IVector2Like = IVector2 | tuple[int, int] | list[int]
 """Alias for a tuple or list that represents an integer 2D vector.
 
-Objects that match this type may be passed as function parameters or attributes where a :py:type:`IVector2` is
+Objects that match this type may be passed as function parameters or attributes where a :type:`IVector2` is
 expected, and are automatically converted.
 """
 
 
-@dataclass
 class IVector2:
     """Tuples of two integers for coordinates ``(x, y)`` and displacements in a 2D space.
 
     For the sake of brevity and consistency, any function parameter or attribute expected to be of type
-    :py:type:`IVector2` can also be set to a tuple or list of two integers. It will be converted to an
-    instance of this class (see :py:type:`IVector2Like`).
+    :type:`IVector2` can also be set to a tuple or list of two integers. It will be converted to an
+    instance of this class (see :type:`IVector2Like`).
 
     Let ``u`` and ``v`` be IVector2 instances and ``k`` a scalar (int). The following operators are supported:
 
@@ -51,19 +49,60 @@ class IVector2:
 
     ..  important::
 
-        :py:type:`IVector2` and :py:type:`Vector2` instances cannot be operated together. Use the
-        :py:meth:`vector2_to_ivector` method to convert an Vector2 to a IVector2.
+        :type:`IVector2` and :type:`~kizuna.core.datatypes.vector2.Vector2` instances cannot be operated together.
+        Use the :meth:`vector2_to_ivector` method to convert a Vector2 to a IVector2.
     """
-    x: int
-    y: int
+    __slots__ = ('_x', '_y')
 
-    def __post_init__(self):
-        """Validate color components.
+    def __init__(self, x: int, y: int):
+        """Construct a :type:`Vector2` instance from its components.
+
+        :param x: The *x*-component of the vector.
+        :param y: The *y*-component of the vector.
         """
-        self.x = validate_int(self.x)
-        self.y = validate_int(self.y)
+        self._x = validate_int(x)
+        self._y = validate_int(y)
 
-    def __add__(self, other: Self | IVector2Like) -> Self:
+    @property
+    def x(self) -> int:
+        """Return the *x*-component of the vector.
+
+        Negative *x* is to the left, positive *x* to the right.
+        """
+        return self._x
+
+    @property
+    def y(self) -> int:
+        """Return the *y*-component of the vector.
+
+        Negative *y* is downwards, positive *y* is upwards.
+        """
+        return self._y
+
+    @property
+    def length(self) -> float:
+        """Return the length of the vector.
+        """
+        return math.sqrt(self.x ** 2 + self.y ** 2)
+
+    @property
+    def length_squared(self) -> int:
+        """Return the length of the vector squared.
+
+        If the length itself is not required (e.g. when comparing distances), this method is more efficient since it
+        does not need to compute the square root.
+        """
+        return self.x ** 2 + self.y ** 2
+
+    @property
+    def direction(self) -> float:
+        """Get the angle of the vector with respect to the positive side of the X-axis, counterclockwise in degrees.
+
+        For the zero vector, this returns 0.0.
+        """
+        return math.atan2(self.y, self.x) * 180 / math.pi
+
+    def __add__(self, other: IVector2Like) -> Self:
         """Component-wise addition of two vectors.
 
         :param other: The other vector.
@@ -73,7 +112,7 @@ class IVector2:
         other = validate_ivector2(other)
         return IVector2(self.x + other.x, self.y + other.y)
 
-    def __radd__(self, other: Self | IVector2Like) -> Self:
+    def __radd__(self, other: IVector2Like) -> Self:
         """Component-wise addition of two vectors.
 
         :param other: The other vector.
@@ -86,11 +125,11 @@ class IVector2:
     def __pos__(self) -> Self:
         """Apply the unary plus operator to the vector.
 
-        :return: A copy of the vector.
+        :return: The same vector.
         """
-        return self.copy()
+        return self
 
-    def __sub__(self, other: Self | IVector2Like) -> Self:
+    def __sub__(self, other: IVector2Like) -> Self:
         """Component-wise subtraction of two vectors.
 
         :param other: The other vector.
@@ -100,7 +139,7 @@ class IVector2:
         other = validate_ivector2(other)
         return IVector2(self.x - other.x, self.y - other.y)
 
-    def __rsub__(self, other: Self | IVector2Like) -> Self:
+    def __rsub__(self, other: IVector2Like) -> Self:
         """Component-wise subtraction of two vectors.
 
         :param other: The other vector.
@@ -117,7 +156,7 @@ class IVector2:
         """
         return IVector2(-self.x, -self.y)
 
-    def __mul__(self, other: Self | IVector2Like | int) -> Self:
+    def __mul__(self, other: IVector2Like | int) -> Self:
         """Component-wise multiplication of two vectors or multiplication of a vector by a scalar.
 
         :param other: The other vector or scalar.
@@ -130,7 +169,7 @@ class IVector2:
         else:
             return IVector2(self.x * other, self.y * other)
 
-    def __rmul__(self, other: Self | IVector2Like | int) -> Self:
+    def __rmul__(self, other: IVector2Like | int) -> Self:
         """Component-wise multiplication of two vectors or multiplication of a scalar by a vector.
 
         :param other: The other vector or scalar.
@@ -143,7 +182,7 @@ class IVector2:
         else:
             return IVector2(self.x * other, self.y * other)
 
-    def __floordiv__(self, other: Self | IVector2Like | int) -> Self:
+    def __floordiv__(self, other: IVector2Like | int) -> Self:
         """Component-wise division of two vectors or division of a vector by a scalar.
 
         :param other: The other vector or scalar.
@@ -156,7 +195,7 @@ class IVector2:
         else:
             return IVector2(self.x // other, self.y // other)
 
-    def __rfloordiv__(self, other: Self | IVector2Like | int) -> Self:
+    def __rfloordiv__(self, other: IVector2Like | int) -> Self:
         """Component-wise division of two vectors or division of a scalar by a vector.
 
         :param other: The other vector or scalar.
@@ -209,48 +248,8 @@ class IVector2:
         """
         return f"({self.x}, {self.y})"
 
-    def __copy__(self) -> Self:
-        """Make a copy of the vector.
 
-        :return: The copy of the vector.
-        """
-        return IVector2(self.x, self.y)
-
-    def __deepcopy__(self, memo: dict) -> Self:
-        """Make a copy of the vector.
-
-        :return: The copy of the vector.
-        """
-        return IVector2(self.x, self.y)
-
-    def copy(self) -> Self:
-        """Make a copy of the vector.
-
-        :return: The copy of the vector.
-        """
-        return self.__copy__()
-
-    @property
-    def length(self) -> float:
-        """Return the length of the vector.
-
-        :return: The length of the vector.
-        """
-        return math.sqrt(self.x ** 2 + self.y ** 2)
-
-    @property
-    def length_squared(self) -> int:
-        """Return the length of the vector squared.
-
-        If the length itself is not required (e.g. when comparing distances), this method is more efficient since it
-        does not need to compute the square root.
-
-        :return: The length of the vector squared.1
-        """
-        return self.x ** 2 + self.y ** 2
-
-
-def validate_ivector2(value: IVector2 | IVector2Like) -> IVector2:
+def validate_ivector2(value: IVector2Like) -> IVector2:
     """Validate that the given value is a IVector2D or can be converted to a Vector2D.
 
     :param value: The value to validate.
@@ -269,7 +268,7 @@ def validate_ivector2(value: IVector2 | IVector2Like) -> IVector2:
         raise TypeError(f'Value must be Vector2 or convertible to Vector2, got {type(value).__qualname__}.')
 
 
-def validate_ivector2_or_scalar(value: IVector2 | IVector2Like | int) -> IVector2 | int:
+def validate_ivector2_or_scalar(value: IVector2Like | int) -> IVector2 | int:
     """Validate that the given value is a IVector2D, can be converted to a Vector2D, or is a scalar.
 
     :param value: The value to validate.

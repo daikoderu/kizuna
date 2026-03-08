@@ -1,49 +1,67 @@
-from dataclasses import dataclass
-from typing import Any, Self
+from typing import Any
 
 from kizuna.core.validation import validate_int, clamp_int
 
-
-type ColorLike = tuple[int, int, int, int] | tuple[int, int, int] | list[int]
+type ColorLike = Color | tuple[int, int, int, int] | tuple[int, int, int] | list[int]
 """Alias for a tuple or list that represents a color.
 """
 
 
-@dataclass
 class Color:
     """Tuples of four integers between 0 and 255 to define colors in ``(r, g, b, a)`` format.
 
     For the sake of brevity and consistency, any function parameter or attribute expected to be of type Color can
-    also be set to a tuple or list of four integers. It will be converted to an instance of this class.
+    also be set to a tuple or list of four integers. It will be converted to an instance of this class
+    (see :type:`ColorLike`).
 
     Out-of-bounds values are automatically clamped. If the class is called with three values, these correspond to
-    red, green, and blue, respectively, and the alpha (transparency) is set to 255 (fully opaque).
+    red, green, and blue, respectively, and the alpha (opacity) is set to 255 (fully opaque).
     """
-    r: int
-    g: int
-    b: int
-    a: int = 255
+    __slots__ = ('_r', '_g', '_b', '_a')
 
-    def __post_init__(self):
-        """Validate color components.
+    def __init__(self, r: int, g: int, b: int, a: int = 255):
+        """Construct a :type:`Color` instance from its RGBA components.
+
+        :param r: The red component of the color.
+        :param g: The green component of the color.
+        :param b: The blue component of the color.
+        :param a: The alpha component of the color.
         """
-        self.r = clamp_int(validate_int(self.r), 0, 255)
-        self.g = clamp_int(validate_int(self.g), 0, 255)
-        self.b = clamp_int(validate_int(self.b), 0, 255)
-        self.a = clamp_int(validate_int(self.a), 0, 255)
+        self._r = clamp_int(validate_int(r), 0, 255)
+        self._g = clamp_int(validate_int(g), 0, 255)
+        self._b = clamp_int(validate_int(b), 0, 255)
+        self._a = clamp_int(validate_int(a), 0, 255)
 
     @property
-    def as_tuple(self) -> tuple[int, int, int, int]:
-        """Return the color as a normal tuple.
+    def r(self) -> int:
+        """Return the red component of the color.
         """
-        return self.r, self.g, self.b, self.a
+        return self._r
+
+    @property
+    def g(self) -> int:
+        """Return the green component of the vector.
+        """
+        return self._g
+
+    @property
+    def b(self) -> int:
+        """Return the blue component of the color.
+        """
+        return self._b
+
+    @property
+    def a(self) -> int:
+        """Return the alpha component of the vector.
+        """
+        return self._a
 
     def __iter__(self):
         """Iterator over the color components.
 
         This allows easy destructuring.
         """
-        return iter(self.as_tuple)
+        return iter((self.r, self.g, self.b, self.a))
 
     def __eq__(self, other: Any) -> bool:
         """Component-wise equality of two colors.
@@ -52,7 +70,7 @@ class Color:
         :return: True if the two color are equal, false otherwise.
         """
         try:
-            return validate_color(other).as_tuple == self.as_tuple
+            return tuple(validate_color(other)) == tuple(self)
         except TypeError:
             return False
 
@@ -69,7 +87,7 @@ class Color:
 
         :return: The hash code of the color.
         """
-        return hash(self.as_tuple)
+        return hash(tuple(self))
 
     def __str__(self):
         """String representation of the color.
@@ -78,15 +96,8 @@ class Color:
         """
         return f"rgba({self.r}, {self.g}, {self.b}, {self.a})"
 
-    def __copy__(self) -> Self:
-        """Make a copy of the color.
 
-        :return: The copy of the color.
-        """
-        return Color(self.r, self.g, self.b, self.a)
-
-
-def validate_color(value: Color | ColorLike) -> Color:
+def validate_color(value: ColorLike) -> Color:
     """Validate that the given value is a color or can be converted to a color.
 
     :param value: The value to validate.

@@ -1,43 +1,36 @@
-import pyglet.text
-
+from kizuna.config import settings
 from kizuna.core.assets import ImageAsset
-from kizuna.core.datatypes import Vector2
+from kizuna.core.datatypes import Vector2, validate_vector2
+from kizuna.core.validation import validate_float, validate_type
 from kizuna.rendering.batches import DrawBatch
 
 
 class Drawable:
+    """Representation of anything that can be drawn to the screen.
+    """
 
-    def __init__(self, visible: bool = True):
-        self.visible = visible
+    def on_prepare_draw(self, batch: DrawBatch):
+        """Implement this method to prepare this drawable to be drawn as part of a batch.
 
-    def prepare_for_batch(self, batch: DrawBatch):
+        :param batch: The :class:`DrawBatch` that will be drawn to.
+        """
         raise NotImplementedError()
 
 
 class ImageDrawable(Drawable):
+    """Encapsulation of an image that can be drawn to the screen.
+    """
 
     def __init__(
         self,
         asset: ImageAsset,
         position: Vector2 | None = None,
         rotation: float | None = None,
-        visible: bool = True,
     ):
-        super().__init__(visible)
-        self.asset = asset
-        self.position = position if position is not None else Vector2(0, 0)
-        self.rotation = rotation if rotation is not None else 0
-        self._pyglet_instance = None
+        self.asset = validate_type(asset, ImageAsset)
+        self.asset.load()
+        self.position = validate_vector2(position) if position is not None else Vector2(0, 0)
+        self.rotation = validate_float(rotation) if rotation is not None else 0
 
-    @property
-    def _pyglet(self):
-        if self._pyglet_instance is None:
-            self._pyglet_instance = pyglet.sprite.Sprite(self.asset._pyglet)
-        return self._pyglet_instance
-
-    def prepare_draw(self, batch: DrawBatch):
-        if not self.visible:
-            return
-        self._pyglet.batch = batch._pyglet if self.visible else None
-        self._pyglet.position = self.position.x, self.position.y, 0.0
-        self._pyglet.rotation = -self.rotation
+    def on_prepare_draw(self, batch: DrawBatch):
+        settings.backend.prepare_draw_sprite(self, batch)

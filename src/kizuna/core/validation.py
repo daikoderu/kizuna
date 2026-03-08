@@ -1,16 +1,17 @@
 """Compilation of various validation functions used throughout the entire framework.
 
-All validations raise either :py:class:`ValueError` or :py:class:`TypeError`.
+All validations raise either :class:`ValueError` or :class:`TypeError`.
 """
 
 import re
 from importlib import import_module
+from types import UnionType
 from typing import Any, Callable
 
 
 # ---- TYPE VALIDATORS ----
 
-def validate_type(value: Any, expected_type: type) -> Any:
+def validate_type(value: Any, expected_type: type | UnionType) -> Any:
     """Validate that the given value is a valid type.
 
     :param value: The value to validate.
@@ -19,7 +20,16 @@ def validate_type(value: Any, expected_type: type) -> Any:
     :raise TypeError: If the value is not a valid type.
     """
     if not isinstance(value, expected_type):
-        raise TypeError(f'Value must be {expected_type.__qualname__}, got {type(value).__qualname__}.')
+        if isinstance(expected_type, UnionType):
+            type_options = [t.__qualname__ for t in expected_type.__args__]
+            if len(type_options) == 2:
+                type_options_str = f'{type_options[0]} or {type_options[1]}'
+            else:
+                options_except_last = ', '.join(type_options[:-1])
+                type_options_str = f'{options_except_last}, or {type_options[-1]}'
+        else:
+            type_options_str = expected_type.__qualname__
+        raise TypeError(f'Value must be {type_options_str}, got {type(value).__qualname__}.')
     return value
 
 
