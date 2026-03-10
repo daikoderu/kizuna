@@ -139,7 +139,7 @@ def validate_and_import_module_path(value: str) -> Any:
     try:
         module = import_module(module_path)
     except ImportError as e:
-        raise ValueError(f'Could not import "{value}".') from e
+        raise ValueError(f'Could not import "{module_path}": {e}') from e
 
     try:
         return getattr(module, element)
