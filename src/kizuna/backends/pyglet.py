@@ -7,11 +7,11 @@ from kizuna.backends.base import Backend
 from kizuna.core.input import inputstate
 
 if TYPE_CHECKING:
-    from kizuna.core.assets import Asset, ImageAsset
+    from kizuna.core.assets import Asset, ImageAsset, FontAsset
     from kizuna.core.controllers import Controller
     from kizuna.config import Settings
     from kizuna.rendering.batches import DrawBatch
-    from kizuna.rendering.drawables import SpriteDrawable
+    from kizuna.rendering.drawables import TextDrawable, SpriteDrawable
 
 
 def _step(dt: float, controllers: list['Controller']):
@@ -43,15 +43,20 @@ def _on_key_release(symbol: int, modifiers: int):
 
 
 class PygletBackend(Backend):
+    assets: dict['Asset', pyglet.image.Texture | pyglet.image.TextureRegion | pyglet.font.base.Font]
+
     batches: dict['DrawBatch', pyglet.graphics.Batch]
-    assets: dict['Asset', pyglet.image.Texture | pyglet.image.TextureRegion]
     sprites: dict['SpriteDrawable', pyglet.sprite.Sprite]
+    texts: dict['TextDrawable', pyglet.text.Label]
+
+    # ---- KIZUNA LIFECYCLE METHODS ----
 
     def __init__(self, settings: 'Settings'):
         super().__init__(settings)
-        self.batches = {}
         self.assets = {}
+        self.batches = {}
         self.sprites = {}
+        self.texts = {}
 
     def initialize(self, base_directory: Path):
         # Add the assets to the path.
@@ -90,35 +95,56 @@ class PygletBackend(Backend):
         # Run the app.
         pyglet.app.run(1 / self.settings.FRAMES_PER_SECOND)
 
+    # ---- ASSET LOADING METHODS ----
+
     def load_image_asset(self, asset: 'ImageAsset'):
         pyglet_image = pyglet.resource.image(asset.path)
         pyglet_image.anchor_x, pyglet_image.anchor_y = (pyglet_image.width, pyglet_image.height) * asset.origin
         self.assets[asset] = pyglet_image
 
+    def load_font_asset(self, asset: 'FontAsset'):
+        pyglet.resource.add_font(asset.path)
+        self.assets[asset] = pyglet.font.load(name=asset.family_name, size=asset.size)
+
+    # ---- PRE-DRAWING METHODS ----
+
+    def prepare_draw_text(self, drawable: 'TextDrawable', batch: 'DrawBatch'):
+        pyglet_font = self.assets[drawable.font]
+        pyglet_label = self._get_or_create_text(drawable)
+        pyglet_label.visible = drawable.visible
+        if drawable.visible:
+            pyglet_label.text = drawable.text
+            pyglet_label.font_name = pyglet_font.name
+            pyglet_label.font_size = drawable.font.size
+            pyglet_label.position = drawable.position.x, drawable.position.y, 0.0
+            pyglet_label.batch = self._get_or_create_batch(batch)
+
+    def prepare_draw_sprite(self, drawable: 'SpriteDrawable', batch: 'DrawBatch'):
+        pyglet_sprite = self._get_or_create_sprite(drawable)
+        pyglet_sprite.visible = drawable.visible
+        if drawable.visible:
+            pyglet_sprite.batch = self._get_or_create_batch(batch)
+            pyglet_sprite.position = drawable.position.x, drawable.position.y, 0.0
+            pyglet_sprite.rotation = -drawable.rotation
+
+    # ---- DRAWING METHODS ----
+
     def draw_batch(self, batch: 'DrawBatch'):
         self._get_or_create_batch(batch).draw()
 
-    def prepare_draw_sprite(self, drawable: 'SpriteDrawable', batch: 'DrawBatch'):
-        sprite = self._get_or_create_sprite(drawable)
-        sprite.visible = drawable.visible
-        if drawable.visible:
-            sprite.batch = self._get_or_create_batch(batch)
-            sprite.position = drawable.position.x, drawable.position.y, 0.0
-            sprite.rotation = -drawable.rotation
+    # ---- PRIVATE METHODS ----
 
     def _get_or_create_batch(self, batch: 'DrawBatch'):
         if batch not in self.batches:
             self.batches[batch] = pyglet.graphics.Batch()
         return self.batches[batch]
 
-    def _get_or_create_image_asset(self, asset: 'ImageAsset'):
-        if asset not in self.assets:
-            pyglet_image = pyglet.resource.image(asset.path)
-            pyglet_image.anchor_x = pyglet_image.width * asset.origin.value.x
-            pyglet_image.anchor_y = pyglet_image.height * asset.origin.value.y
-        return self.assets[asset]
-
     def _get_or_create_sprite(self, drawable: 'SpriteDrawable'):
         if drawable not in self.sprites:
-            self.sprites[drawable] = pyglet.sprite.Sprite(self._get_or_create_image_asset(drawable.asset))
+            self.sprites[drawable] = pyglet.sprite.Sprite(self.assets[drawable.asset])
         return self.sprites[drawable]
+
+    def _get_or_create_text(self, drawable: 'TextDrawable'):
+        if drawable not in self.texts:
+            self.texts[drawable] = pyglet.text.Label()
+        return self.texts[drawable]

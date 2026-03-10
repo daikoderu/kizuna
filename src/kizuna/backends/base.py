@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:
-    from kizuna.core.assets import ImageAsset
+    from kizuna.core.assets import ImageAsset, FontAsset
     from kizuna.config import Settings
     from kizuna.rendering.batches import DrawBatch
     from kizuna.rendering.drawables import SpriteDrawable
@@ -21,6 +21,9 @@ class Backend:
         raise NotImplementedError()
 
     def load_image_asset(self, asset: 'ImageAsset'):
+        raise NotImplementedError()
+
+    def load_font_asset(self, asset: 'FontAsset'):
         raise NotImplementedError()
 
     def draw_batch(self, batch: 'DrawBatch'):
