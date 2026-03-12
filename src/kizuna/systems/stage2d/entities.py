@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Iterator
+from typing import TYPE_CHECKING
 
 from kizuna.core.datatypes import Vector2, validate_vector2, Vector2Like
 from kizuna.core.validation import validate_float, validate_type
@@ -35,8 +35,6 @@ class Entity2D:
     """
     sprites: list[SpriteComponent] = []
 
-    _drawables: dict[SpriteComponent, SpriteDrawable]
-
     def __init__(self, controller: 'Stage2DController', position: Vector2Like, rotation: float = 0.0):
         """Creates a new entity.
 
@@ -53,7 +51,10 @@ class Entity2D:
         self.rotation = validate_float(rotation)
 
         # Instantiate sprite components as drawables.
-        self._drawables = {component: SpriteDrawable(component.asset) for component in self.sprites}
+        self._drawables = [
+            SpriteDrawable(component.asset, component.position_offset, component.rotation_offset)
+            for component in self.sprites
+        ]
 
     def __str__(self) -> str:
         return repr(self)
@@ -65,24 +66,27 @@ class Entity2D:
         return text
 
     @property
-    def drawables(self) -> Iterator[SpriteDrawable]:
-        """Returns an iterator over the drawables of the entity.
-        """
-        self._ensure_alive()
-        return iter(self._drawables.values())
-
-    @property
     def batches(self) -> set[DrawBatch]:
         """Returns a set of the batches used by the sprites.
         """
-        self._ensure_alive()
-        return set(sprite.batch for sprite in self._drawables.keys())
+        if not self.is_alive:
+            return set()
+        return set(sprite.batch for sprite in self.sprites)
 
     @property
     def is_alive(self) -> bool:
         """Returns whether the entity has not been destroyed yet.
         """
         return self.controller is not None
+
+    def get_drawable(self, index: int) -> SpriteDrawable:
+        """Return the drawable corresponding to the given index in the ``sprites`` attribute.
+
+        :param index: The index of the drawable to return.
+        :raise IndexError: If the index is not in the ``sprites`` attribute.
+        :raise EntityDestroyedException: If the entity has been destroyed.
+        """
+        return self._drawables[index]
 
     def destroy(self) -> None:
         """Destroys the entity from the stage, cleaning up any resources.
@@ -94,13 +98,13 @@ class Entity2D:
         self.controller = None
 
         # Destroy the associated drawables.
-        for sprite in self.drawables:
+        for sprite in self._drawables:
             sprite.on_destroy()
 
     def prepare_draw(self):
         if not self.is_alive:
             return
-        for component, sprite in self._drawables.items():
+        for component, sprite in zip(self.sprites, self._drawables):
             sprite.position = self.position + component.position_offset
             sprite.rotation = self.rotation + component.rotation_offset
             sprite.on_prepare_draw(component.batch)
