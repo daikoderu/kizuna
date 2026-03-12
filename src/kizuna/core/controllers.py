@@ -1,3 +1,9 @@
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from kizuna.config import SettingSpec
+
+
 class Controller:
     """Class to encapsulate top-level game logic.
 
@@ -6,6 +12,7 @@ class Controller:
     Kizuna creates one instance of each controller in the order specified in the ``CONTROLLERS`` setting. Their methods
     are always dispatched in the same order.
     """
+    settings: list['SettingSpec'] = []
 
     def on_init(self):
         """Called when the controller class is initialized at the start of the game loop.
