@@ -196,7 +196,7 @@ def validate_list(value: list, distinct: bool = False, child: Callable[[Any], An
     if distinct and len(value) >= 2:
         sorted_list = sorted(value, key=hash)
         for i in range(len(value) - 1):
-            if sorted_list[i] != sorted_list[i + 1]:
+            if sorted_list[i] == sorted_list[i + 1]:
                 raise ValueError(f'List cannot contain duplicate elements.')
 
     # Validate each element.

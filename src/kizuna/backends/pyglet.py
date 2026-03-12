@@ -1,10 +1,9 @@
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
 import pyglet
 
 from kizuna.backends.base import Backend
-from kizuna.core.input import inputstate
 
 if TYPE_CHECKING:
     from kizuna.core.assets import Asset, ImageAsset, FontAsset
@@ -14,40 +13,26 @@ if TYPE_CHECKING:
     from kizuna.rendering.drawables import TextDrawable, SpriteDrawable
 
 
-def _step(dt: float, controllers: list['Controller']):
-    for controller in controllers:
-        controller.on_step(dt)
-
-
-def _draw(window: pyglet.window.Window, controllers: list['Controller']):
-    window.clear()
-    for controller in controllers:
-        controller.on_draw()
-
-
-def _on_key_press(symbol: int, modifiers: int):
-    if symbol == pyglet.window.key.UP:
-        inputstate.held_keys['up'] = True
-    elif symbol == pyglet.window.key.LEFT:
-        inputstate.held_keys['left'] = True
-    elif symbol == pyglet.window.key.RIGHT:
-        inputstate.held_keys['right'] = True
-
-def _on_key_release(symbol: int, modifiers: int):
-    if symbol == pyglet.window.key.UP:
-        inputstate.held_keys['up'] = False
-    elif symbol == pyglet.window.key.LEFT:
-        inputstate.held_keys['left'] = False
-    elif symbol == pyglet.window.key.RIGHT:
-        inputstate.held_keys['right'] = False
+PYGLET_CONSTANTS_TO_KIZUNA_KEYS = {
+    pyglet.window.key.LEFT: 'left',
+    pyglet.window.key.RIGHT: 'right',
+    pyglet.window.key.UP: 'up',
+    pyglet.window.key.DOWN: 'down',
+}
 
 
 class PygletBackend(Backend):
+    # Map from Kizuna assets to Pyglet resources.
     assets: dict['Asset', pyglet.image.Texture | pyglet.image.TextureRegion | pyglet.font.base.Font]
 
+    # Maps from Kizuna batches to Pyglet batches.
     batches: dict['DrawBatch', pyglet.graphics.Batch]
+
+    # Maps from Kizuna drawables to Pyglet drawables.
     sprites: dict['SpriteDrawable', pyglet.sprite.Sprite]
     texts: dict['TextDrawable', pyglet.text.Label]
+
+    window: pyglet.window.Window
 
     # ---- KIZUNA LIFECYCLE METHODS ----
 
@@ -63,34 +48,41 @@ class PygletBackend(Backend):
         pyglet.resource.path = [str(base_directory / 'assets')]
         pyglet.resource.reindex()
 
-    def launch_game_loop(self):
+    def launch_game_loop(
+        self,
+        step_fn: Callable[[float], None],
+        draw_fn: Callable[[], None],
+        controllers: list['Controller'],
+    ):
+        from kizuna.systems.input import InputController
+
         window = pyglet.window.Window()
         window.size = tuple(self.settings.WINDOW_SIZE)
         window.set_caption(self.settings.WINDOW_CAPTION)
 
-        # Instantiate the controllers.
-        controllers = [controller_class() for controller_class in self.settings.CONTROLLERS]
-
-        # Call the ``on_init`` method on each controller.
-        for controller in controllers:
-            controller.on_init()
-
         # Schedule update calls.
-        pyglet.clock.schedule_interval(lambda dt: _step(dt, controllers), 1 / self.settings.STEPS_PER_SECOND)
+        pyglet.clock.schedule_interval(lambda dt: step_fn(dt), 1 / self.settings.STEPS_PER_SECOND)
 
         # Attach the draw event handler.
         @window.event
         def on_draw():
-            _draw(window, controllers)
+            window.clear()
+            draw_fn()
 
-        # Attach the input handler.
-        @window.event
-        def on_key_press(symbol: int, modifiers: int):
-            _on_key_press(symbol, modifiers)
+        # Attach the input handlers.
+        input_controller = next((ctr for ctr in controllers if isinstance(ctr, InputController)), None)
+        if input_controller is not None:
+            @window.event
+            def on_key_press(symbol: int, modifiers: int):
+                kizuna_key_value = PYGLET_CONSTANTS_TO_KIZUNA_KEYS.get(symbol)
+                if kizuna_key_value is not None:
+                    input_controller.held_keys[kizuna_key_value] = True
 
-        @window.event
-        def on_key_release(symbol: int, modifiers: int):
-            _on_key_release(symbol, modifiers)
+            @window.event
+            def on_key_release(symbol: int, modifiers: int):
+                kizuna_key_value = PYGLET_CONSTANTS_TO_KIZUNA_KEYS.get(symbol)
+                if kizuna_key_value is not None:
+                    input_controller.held_keys[kizuna_key_value] = False
 
         # Run the app.
         pyglet.app.run(1 / self.settings.FRAMES_PER_SECOND)

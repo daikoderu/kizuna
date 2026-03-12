@@ -34,3 +34,14 @@ class BackendNotInstantiatedError(ManagementError):
 
     def __init__(self):
         super().__init__(f'The backend is not instantiated.')
+
+
+class ControllerDependencyInjectionError(ManagementError):
+    """Exception raised when instantiating controllers.
+    """
+
+    def __init__(self, dependent_controller: type, dependency_controller: type):
+        super().__init__(
+            f'Cannot instantiate "{dependent_controller.__qualname__}" because it depends on '
+            f'"{dependency_controller.__qualname__}", which is not declared in "settings.CONTROLLERS" before.'
+        )
