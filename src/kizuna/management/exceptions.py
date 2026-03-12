@@ -1,14 +1,12 @@
 """Project management and initialization exceptions.
 """
 
+from kizuna.core.exceptions import KizunaError
 
-class ManagementError(Exception):
+
+class ManagementError(KizunaError):
     """Base class for exceptions related to project management.
     """
-
-    def __init__(self, message: str):
-        super().__init__(message)
-        self.message = message
 
 
 class SettingsNotFoundError(ManagementError):

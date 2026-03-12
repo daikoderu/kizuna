@@ -29,8 +29,8 @@ class PygletBackend(Backend):
     batches: dict['DrawBatch', pyglet.graphics.Batch]
 
     # Maps from Kizuna drawables to Pyglet drawables.
-    sprites: dict['SpriteDrawable', pyglet.sprite.Sprite]
     texts: dict['TextDrawable', pyglet.text.Label]
+    sprites: dict['SpriteDrawable', pyglet.sprite.Sprite]
 
     window: pyglet.window.Window
 
@@ -123,6 +123,18 @@ class PygletBackend(Backend):
 
     def draw_batch(self, batch: 'DrawBatch'):
         self._get_or_create_batch(batch).draw()
+
+    # ---- DRAWABLE DESTRUCTION METHODS ----
+
+    def destroy_text(self, drawable: 'TextDrawable'):
+        pyglet_label = self.texts.get(drawable)
+        if pyglet_label is not None:
+            pyglet_label.delete()
+
+    def destroy_sprite(self, drawable: 'SpriteDrawable'):
+        pyglet_sprite = self.sprites.get(drawable)
+        if pyglet_sprite is not None:
+            pyglet_sprite.delete()
 
     # ---- PRIVATE METHODS ----
 

@@ -7,10 +7,12 @@ if TYPE_CHECKING:
     from kizuna.core.assets import ImageAsset, FontAsset
     from kizuna.config import Settings
     from kizuna.rendering.batches import DrawBatch
-    from kizuna.rendering.drawables import SpriteDrawable
+    from kizuna.rendering.drawables import TextDrawable, SpriteDrawable
 
 
 class Backend:
+
+    # ---- KIZUNA LIFECYCLE METHODS ----
 
     def __init__(self, settings: 'Settings'):
         self.settings = settings
@@ -26,14 +28,31 @@ class Backend:
     ):
         raise NotImplementedError()
 
+    # ---- ASSET LOADING METHODS ----
+
     def load_image_asset(self, asset: 'ImageAsset'):
         raise NotImplementedError()
 
     def load_font_asset(self, asset: 'FontAsset'):
         raise NotImplementedError()
 
-    def draw_batch(self, batch: 'DrawBatch'):
+    # ---- PRE-DRAWING METHODS ----
+
+    def prepare_draw_text(self, drawable: 'TextDrawable', batch: 'DrawBatch'):
         raise NotImplementedError()
 
     def prepare_draw_sprite(self, drawable: 'SpriteDrawable', batch: 'DrawBatch'):
+        raise NotImplementedError()
+
+    # ---- DRAWING METHODS ----
+
+    def draw_batch(self, batch: 'DrawBatch'):
+        raise NotImplementedError()
+
+    # ---- DRAWABLE DESTRUCTION METHODS ----
+
+    def destroy_text(self, drawable: 'TextDrawable'):
+        raise NotImplementedError()
+
+    def destroy_sprite(self, drawable: 'SpriteDrawable'):
         raise NotImplementedError()
