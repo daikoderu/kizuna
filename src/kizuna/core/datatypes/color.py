@@ -1,6 +1,7 @@
 from typing import Any
 
 from kizuna.core.validation import validate_int, clamp_int
+from kizuna.utils import fullname
 
 type ColorLike = Color | tuple[int, int, int, int] | tuple[int, int, int] | list[int]
 """Alias for a tuple or list that represents a color.
@@ -120,4 +121,4 @@ def validate_color(value: ColorLike) -> Color:
     ):
         return Color(*value)
     else:
-        raise TypeError(f'Value must be Color or convertible to Color, got {type(value).__qualname__}.')
+        raise TypeError(f'Value must be Color or convertible to Color, got {fullname(type(value))}.')

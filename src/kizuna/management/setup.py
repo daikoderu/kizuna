@@ -1,12 +1,17 @@
+import logging
 import sys
 from pathlib import Path
 
+from kizuna import __version__
 from kizuna.config import settings
 from kizuna.core.controllers import Controller
 from kizuna.management.exceptions import ControllerDependencyInjectionError
 
 
-def initialize(base_directory: Path, standalone: bool):
+logger = logging.getLogger(__name__)
+
+
+def initialize(base_directory: Path, standalone: bool, enable_kizuna_log: bool):
     """Initialize the application.
 
     This is used to validate settings and initialize anything necessary for Kizuna's CLI to work smoothly with the
@@ -14,7 +19,18 @@ def initialize(base_directory: Path, standalone: bool):
 
     :param base_directory: The base directory of the project.
     :param standalone: If true, runs the application in standalone mode.
+    :param enable_kizuna_log: If true, configure logging.
     """
+    # Create log file.
+    if enable_kizuna_log:
+        logging.basicConfig(
+            filename=str(base_directory / 'kizuna.log'),
+            level=logging.INFO if standalone else logging.DEBUG,
+            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            force=True,
+        )
+        logger.info(f'===== Kizuna Log File - Version {__version__} =====')
+
     # Add the base directory to the PYTHONPATH.
     sys.path.insert(0, str(base_directory))
 
@@ -22,7 +38,7 @@ def initialize(base_directory: Path, standalone: bool):
     settings.load('src.settings')
 
     # Create the backend instance and initialize it.
-    settings.backend.initialize(base_directory)
+    settings.backend.initialize(base_directory, standalone)
 
 
 def launch_app():
@@ -72,11 +88,12 @@ def draw_function(controllers: list[Controller]):
         controller.on_draw()
 
 
-def bootstrap(base_directory: Path, standalone: bool):
+def bootstrap(base_directory: Path, standalone: bool, enable_kizuna_log: bool = True):
     """Entrypoint for Kizuna applications.
 
     :param base_directory: The base directory of the project.
     :param standalone: If true, runs the application in standalone mode.
+    :param enable_kizuna_log: If true, configure logging.
     """
-    initialize(base_directory, standalone)
+    initialize(base_directory, standalone, enable_kizuna_log)
     launch_app()

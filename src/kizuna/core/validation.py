@@ -8,6 +8,8 @@ from importlib import import_module
 from types import UnionType
 from typing import Any, Callable
 
+from kizuna.utils import fullname
+
 
 # ---- TYPE VALIDATORS ----
 
@@ -21,15 +23,15 @@ def validate_type(value: Any, expected_type: type | UnionType) -> Any:
     """
     if not isinstance(value, expected_type):
         if isinstance(expected_type, UnionType):
-            type_options = [t.__qualname__ for t in expected_type.__args__]
+            type_options = [fullname(t) for t in expected_type.__args__]
             if len(type_options) == 2:
                 type_options_str = f'{type_options[0]} or {type_options[1]}'
             else:
                 options_except_last = ', '.join(type_options[:-1])
                 type_options_str = f'{options_except_last}, or {type_options[-1]}'
         else:
-            type_options_str = expected_type.__qualname__
-        raise TypeError(f'Value must be {type_options_str}, got {type(value).__qualname__}.')
+            type_options_str = fullname(expected_type)
+        raise TypeError(f'Value must be {type_options_str}, got "{fullname(type(value))}".')
     return value
 
 
@@ -68,7 +70,7 @@ def validate_float(value: int | float) -> float:
     :raise TypeError: If the value cannot be converted to a float.
     """
     if not isinstance(value, int | float):
-        raise TypeError(f'Value must be int or float, got {type(value).__qualname__}.')
+        raise TypeError(f'Value must be int or float, got "{fullname(type(value))}".')
     return float(value)
 
 def validate_positive_float(value: int | float) -> float:

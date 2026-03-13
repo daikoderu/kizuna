@@ -1,5 +1,6 @@
 from kizuna.config import settings
 from kizuna.core.assets.base import Asset
+from kizuna.core.assets.paths import AssetPathLike
 from kizuna.core.constants import Alignment
 from kizuna.core.datatypes import Vector2Like, validate_vector2
 
@@ -10,7 +11,7 @@ class ImageAsset(Asset):
 
     def __init__(
         self,
-        path: str,
+        path: AssetPathLike,
         origin: Alignment | Vector2Like = Alignment.CENTER,
     ) -> None:
         """Define a new asset.

@@ -1,3 +1,4 @@
+import logging
 from importlib import import_module
 from typing import Any, Callable
 
@@ -5,6 +6,9 @@ from kizuna.backends import Backend
 from kizuna.core.datatypes import validate_ivector2
 from kizuna.core.validation import validate_str, validate_list, validate_and_import_module_path, validate_positive_float
 from kizuna.management.exceptions import BackendNotInstantiatedError, SettingsNotFoundError, SettingsValidationError
+from kizuna.utils import fullname
+
+logger = logging.getLogger(__name__)
 
 
 class SettingSpec:
@@ -111,6 +115,7 @@ class Settings:
             setting.validate(self._settings, errors)
         if len(errors) > 0:
             raise SettingsValidationError(errors)
+        logger.info('Settings loaded.')
 
         # Validate the controller settings.
         for controller_class in self._settings['CONTROLLERS']:
@@ -119,6 +124,7 @@ class Settings:
 
         # Create the backend instance.
         self._backend = self.BACKEND_CLASS(self)
+        logger.info(f'Backend instantiated: "{fullname(self.BACKEND_CLASS)}".')
 
 
 settings = Settings()

@@ -1,3 +1,6 @@
+from kizuna.core.assets.paths import validate_asset_path, AssetPathLike
+
+
 class Asset:
     """Any resource (e.g. images, audio, data) that is displayed to the user.
 
@@ -5,16 +8,16 @@ class Asset:
     class manages loading asset data into memory and unloading it when no longer needed. Use the :meth:`on_load`
     and :meth:`on_unload` methods to load and unload asset data.
 
-    :ivar str path: Path of the asset, relative to the assets directory of the project.
+    :ivar str path: Path of the asset.
     :ivar bool is_loaded: Whether the asset is loaded on memory.
     """
 
-    def __init__(self, path: str):
+    def __init__(self, path: AssetPathLike):
         """Define a new asset.
 
-        :param path: Path to the asset, relative to the assets directory of the project.
+        :param path: Path to the asset.
         """
-        self.path = path
+        self.path = validate_asset_path(path)
         self.is_loaded = False
 
     def load(self):

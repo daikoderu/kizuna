@@ -2,6 +2,7 @@
 """
 
 from kizuna.core.exceptions import KizunaError
+from kizuna.utils import fullname
 
 
 class ManagementError(KizunaError):
@@ -40,6 +41,6 @@ class ControllerDependencyInjectionError(ManagementError):
 
     def __init__(self, dependent_controller: type, dependency_controller: type):
         super().__init__(
-            f'Cannot instantiate "{dependent_controller.__qualname__}" because it depends on '
-            f'"{dependency_controller.__qualname__}", which is not declared in "settings.CONTROLLERS" before.'
+            f'Cannot instantiate "{fullname(dependent_controller)}" because it depends on '
+            f'"{fullname(dependency_controller)}", which is not declared in "settings.CONTROLLERS" before.'
         )

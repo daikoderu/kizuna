@@ -1,5 +1,6 @@
 from kizuna.config import settings
-from kizuna.core.assets import Asset
+from kizuna.core.assets.base import Asset
+from kizuna.core.assets.paths import AssetPathLike
 
 
 class FontAsset(Asset):
@@ -8,7 +9,7 @@ class FontAsset(Asset):
 
     def __init__(
         self,
-        path: str,
+        path: AssetPathLike,
         family_name: str,
         size: int,
     ) -> None:

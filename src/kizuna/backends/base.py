@@ -17,7 +17,7 @@ class Backend:
     def __init__(self, settings: 'Settings'):
         self.settings = settings
 
-    def initialize(self, base_directory: Path):
+    def initialize(self, base_directory: Path, standalone: bool):
         raise NotImplementedError()
 
     def launch_game_loop(

@@ -2,6 +2,7 @@ import math
 from typing import Self, Iterator, Any, TYPE_CHECKING
 
 from kizuna.core.validation import validate_float
+from kizuna.utils import fullname
 
 if TYPE_CHECKING:
     from kizuna.core.datatypes import IVector2
@@ -267,7 +268,7 @@ def validate_vector2(value: Vector2Like) -> Vector2:
     ):
         return Vector2(*value)
     else:
-        raise TypeError(f'Value must be Vector2 or convertible to Vector2, got {type(value).__qualname__}.')
+        raise TypeError(f'Value must be Vector2 or convertible to Vector2, got {fullname(type(value))}.')
 
 
 def validate_vector2_or_scalar(value: Vector2 | Vector2Like | int | float) -> Vector2 | int | float:
@@ -287,7 +288,7 @@ def validate_vector2_or_scalar(value: Vector2 | Vector2Like | int | float) -> Ve
         return Vector2(*value)
     else:
         raise TypeError(
-            f'Value must be int, float, Vector2 or convertible to Vector2, got {type(value).__qualname__}.'
+            f'Value must be int, float, Vector2 or convertible to Vector2, got {fullname(type(value))}.'
         )
 
 

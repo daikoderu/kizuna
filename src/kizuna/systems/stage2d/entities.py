@@ -6,6 +6,7 @@ from kizuna.rendering.batches import DrawBatch
 from kizuna.rendering.drawables import SpriteDrawable
 from kizuna.systems.stage2d.components import SpriteComponent
 from kizuna.systems.stage2d.exceptions import EntityDestroyedException
+from kizuna.utils import fullname
 
 if TYPE_CHECKING:
     from kizuna.systems.stage2d.controller import Stage2DController
@@ -60,7 +61,7 @@ class Entity2D:
         return repr(self)
 
     def __repr__(self) -> str:
-        text = f'{self.__class__.__qualname__}({id(self)}, position="{self.position}", rotation={self.rotation})'
+        text = f'{fullname(self.__class__)}({id(self)}, position="{self.position}", rotation={self.rotation})'
         if not self.is_alive:
             text += '[DESTROYED]'
         return text

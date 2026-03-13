@@ -26,7 +26,7 @@ def command():
     # Initialize the project as if we are not in standalone mode, to ensure the configuration is OK.
     base_directory = Path(os.getcwd())
     try:
-        initialize(base_directory, standalone=False)
+        initialize(base_directory, standalone=False, enable_kizuna_log=False)
     except SettingsValidationError as e:
         raise click.ClickException(str(e) + '\n' + '\n'.join(
             f'- {setting}: {validation_error}' for setting, validation_error in e.errors.items()
@@ -46,6 +46,9 @@ def command():
     os.makedirs(build_directory, exist_ok=True)
     os.makedirs(work_files_directory, exist_ok=True)
 
+    # Get a list of referenced classes as hidden imports.
+
+
     try:
         # Launch PyInstaller.
         project_name = base_directory.name
@@ -53,7 +56,7 @@ def command():
             str(launch_file), '--onefile', '--windowed',
             '-n', project_name,
             '-p', str(base_directory),
-            '--add-data', 'assets:assets',
+            '--add-data', 'assets:assets/_project',
             '--collect-submodules', 'src',
             '--hidden-import', 'settings',
             '--distpath', str(build_directory),
