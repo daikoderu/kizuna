@@ -23,3 +23,6 @@ class FontAsset(Asset):
 
     def on_load(self) -> None:
         settings.backend.load_font_asset(self)
+
+
+# TODO: Define the default font asset and bundle it.

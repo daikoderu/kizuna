@@ -52,7 +52,7 @@ class PygletBackend(Backend):
         # Add the assets to the path.
         self.standalone = standalone
         if standalone:
-            project_assets_path = base_directory / 'assets' / '_project'
+            project_assets_path = base_directory / 'assets' / 'project'
         else:
             project_assets_path = base_directory / 'assets'
         pyglet.resource.path = [str(project_assets_path)]

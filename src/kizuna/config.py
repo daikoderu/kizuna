@@ -1,6 +1,6 @@
 import logging
 from importlib import import_module
-from typing import Any, Callable
+from typing import Any, Callable, Iterable
 
 from kizuna.backends import Backend
 from kizuna.core.datatypes import validate_ivector2
@@ -76,6 +76,7 @@ class Settings:
 
     def __init__(self):
         self._settings = {}
+        self.dynamic_imports = []
         self._backend = None
 
     def __getattr__(self, name: str) -> Any:
@@ -113,6 +114,7 @@ class Settings:
         errors = {}
         for setting in BASIC_SETTINGS:
             setting.validate(self._settings, errors)
+            self._register_dynamic_import(self._settings[setting.name])
         if len(errors) > 0:
             raise SettingsValidationError(errors)
         logger.info('Settings loaded.')
@@ -121,10 +123,23 @@ class Settings:
         for controller_class in self._settings['CONTROLLERS']:
             for setting in controller_class.settings:
                 setting.validate(self._settings, errors)
+                self._register_dynamic_import(self._settings[setting.name])
 
         # Create the backend instance.
         self._backend = self.BACKEND_CLASS(self)
         logger.info(f'Backend instantiated: "{fullname(self.BACKEND_CLASS)}".')
+
+    def _register_dynamic_import(self, value: Any):
+        if isinstance(value, type | Callable):
+            self.dynamic_imports.append('.'.join(fullname(value).split('.')[:-1]))
+        elif isinstance(value, list | tuple | set):
+            for element in value:
+                self._register_dynamic_import(element)
+        elif isinstance(value, dict):
+            for k, v in value.items():
+                self._register_dynamic_import(k)
+                self._register_dynamic_import(v)
+
 
 
 settings = Settings()

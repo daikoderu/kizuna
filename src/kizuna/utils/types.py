@@ -1,7 +1,10 @@
-def fullname(type_object: type) -> str:
-    """Get the full name of a type.
+from typing import Any
 
-    :param type_object: The type whose full name will be returned.
+
+def fullname(obj: Any) -> str:
+    """Get the full name of an object.
+
+    :param obj: The object whose full name will be returned.
     :return: The full name.
     """
-    return type_object.__module__ + '.' + type_object.__qualname__
+    return obj.__module__ + '.' + obj.__qualname__

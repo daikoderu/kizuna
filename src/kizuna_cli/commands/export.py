@@ -5,6 +5,7 @@ from pathlib import Path
 import PyInstaller.__main__
 import click
 
+from kizuna.config import settings
 from kizuna.management.exceptions import SettingsValidationError, ManagementError
 from kizuna.management.setup import initialize
 
@@ -46,21 +47,24 @@ def command():
     os.makedirs(build_directory, exist_ok=True)
     os.makedirs(work_files_directory, exist_ok=True)
 
-    # Get a list of referenced classes as hidden imports.
-
+    # Add hidden imports.
+    hidden_imports_args = ['--hidden-import', 'settings']
+    for element in settings.dynamic_imports:
+        hidden_imports_args += ['--hidden-import', element]
 
     try:
         # Launch PyInstaller.
         project_name = base_directory.name
         PyInstaller.__main__.run([
-            str(launch_file), '--onefile', '--windowed',
+            '--onefile', '--windowed',
             '-n', project_name,
             '-p', str(base_directory),
-            '--add-data', 'assets:assets/_project',
+            '--add-data', 'assets:assets/project',
             '--collect-submodules', 'src',
-            '--hidden-import', 'settings',
+            *hidden_imports_args,
             '--distpath', str(build_directory),
             '--workpath', str(work_files_directory),
+            str(launch_file),
         ])
     finally:
         # Clean up.
