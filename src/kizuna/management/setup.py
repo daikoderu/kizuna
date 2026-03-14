@@ -23,8 +23,9 @@ def initialize(base_directory: Path, standalone: bool, enable_kizuna_log: bool):
     """
     # Create log file.
     if enable_kizuna_log:
+        log_directory = Path(sys.executable).parent if standalone else base_directory
         logging.basicConfig(
-            filename=str(base_directory / 'kizuna.log'),
+            filename=str(log_directory / 'kizuna.log'),
             level=logging.INFO if standalone else logging.DEBUG,
             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
             force=True,
