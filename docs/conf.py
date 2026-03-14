@@ -38,6 +38,10 @@ exclude_patterns = [
 ]
 
 
+# ---- Autodoc options ----
+autodoc_member_order = 'bysource'
+
+
 # ---- Options for HTML output ----
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 

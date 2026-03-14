@@ -103,17 +103,17 @@ class PygletBackend(Backend):
 
     def _resolve_path(self, path: 'AssetPath') -> str:
         if self.standalone:
-            return path.namespace + path.path
+            return path._namespace + path._path
         else:
-            return path.path[1:]
+            return path._path[1:]
 
     def load_image_asset(self, asset: 'ImageAsset'):
-        pyglet_image = pyglet.resource.image(self._resolve_path(asset.path))
+        pyglet_image = pyglet.resource.image(self._resolve_path(asset._path))
         pyglet_image.anchor_x, pyglet_image.anchor_y = (pyglet_image.width, pyglet_image.height) * asset.origin
         self.assets[asset] = pyglet_image
 
     def load_font_asset(self, asset: 'FontAsset'):
-        pyglet.resource.add_font(self._resolve_path(asset.path))
+        pyglet.resource.add_font(self._resolve_path(asset._path))
         self.assets[asset] = pyglet.font.load(name=asset.family_name, size=asset.size)
 
     # ---- PRE-DRAWING METHODS ----

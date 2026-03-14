@@ -51,15 +51,17 @@ class IVector2:
     ..  important::
 
         :type:`IVector2` and :type:`~kizuna.core.datatypes.vector2.Vector2` instances cannot be operated together.
-        Use the :meth:`vector2_to_ivector` method to convert a Vector2 to a IVector2.
+        Use the :meth:`vector2_to_ivector` method to convert a :type:`~kizuna.core.datatypes.vector2.Vector2` to a
+        :type:`IVector2`.
     """
     __slots__ = ('_x', '_y')
 
     def __init__(self, x: int, y: int):
-        """Construct a :type:`Vector2` instance from its components.
+        """Create a :type:`IVector2` with the given coordinates.
 
-        :param x: The *x*-component of the vector.
-        :param y: The *y*-component of the vector.
+        :param x: The *x*-component of the vector (negative is left, positive is right).
+        :param y: The *y*-component of the vector (negative is down, positive is up).
+        :return: A new vector with the result.
         """
         self._x = validate_int(x)
         self._y = validate_int(y)
@@ -102,6 +104,12 @@ class IVector2:
         For the zero vector, this returns 0.0.
         """
         return math.atan2(self.y, self.x) * 180 / math.pi
+
+    def __str__(self) -> str:
+        return f'({self.x}, {self.y})'
+
+    def __repr__(self):
+        return f'IVector2({self.x}, {self.y})'
 
     def __add__(self, other: IVector2Like) -> Self:
         """Component-wise addition of two vectors.
@@ -238,19 +246,13 @@ class IVector2:
     def __hash__(self) -> int:
         return hash(tuple(self))
 
-    def __str__(self) -> str:
-        return f'({self.x}, {self.y})'
-
-    def __repr__(self):
-        return f'IVector2({self.x}, {self.y})'
-
 
 def validate_ivector2(value: IVector2Like) -> IVector2:
-    """Validate that the given value is a IVector2D or can be converted to a Vector2D.
+    """Validate that the given value is a :type:`IVector2` or can be converted to a :type:`IVector2`.
 
     :param value: The value to validate.
     :return: The validated value.
-    :raise TypeError: If the given value is not a Vector2D and cannot be converted to such.
+    :raise TypeError: If the given value is not a :type:`IVector2` and cannot be converted to such.
     """
     if isinstance(value, IVector2):
         return value
@@ -265,11 +267,13 @@ def validate_ivector2(value: IVector2Like) -> IVector2:
 
 
 def validate_ivector2_or_scalar(value: IVector2Like | int) -> IVector2 | int:
-    """Validate that the given value is a IVector2D, can be converted to a Vector2D, or is a scalar.
+    """Validate that the given value is a :type:`IVector2`, can be converted to a :type:`IVector2`, or is an integer
+    scalar.
 
     :param value: The value to validate.
     :return: The validated value.
-    :raise TypeError: If the given value is not a Vector2D and cannot be converted to such.
+    :raise TypeError: If the given value is not a :type:`IVector2`, cannot be converted to such, and not an integer
+        scalar.
     """
     if isinstance(value, int | IVector2):
         return value
@@ -286,7 +290,7 @@ def validate_ivector2_or_scalar(value: IVector2Like | int) -> IVector2 | int:
 
 
 def vector2_to_ivector(value: 'Vector2') -> IVector2:
-    """Convert a Vector2 to a IVector2.
+    """Convert a floating-point 2D vector to an integer 2D vector.
 
     :param value: The value to convert.
     :return: The converted value.

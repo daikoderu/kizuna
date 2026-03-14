@@ -4,6 +4,8 @@ from kizuna.core.datatypes import Vector2
 
 
 class Alignment(Enum):
+    """Possible values for alignments of an object inside a container.
+    """
     BOTTOM_LEFT = Vector2(0.0, 0.0)
     BOTTOM_CENTER = Vector2(0.5, 0.0)
     BOTTOM_RIGHT = Vector2(1.0, 0.0)

@@ -23,7 +23,7 @@ class Vector2:
     :type:`Vector2` can also be set to a tuple or list of two integers and/or floats. It will be converted to an
     instance of this class (see :type:`Vector2Like`).
 
-    Let ``u`` and ``v`` be Vector2 instances and ``k`` a scalar (int or float). The following operators are supported:
+    Let ``u`` and ``v`` be vector instances and ``k`` a scalar (int or float). The following operators are supported:
 
     ======================== ================================= ======================================
     Operation                Result                            Description
@@ -51,11 +51,18 @@ class Vector2:
     ..  important::
 
         :type:`Vector2` and :type:`~kizuna.core.datatypes.ivector2.IVector2` instances cannot be operated together.
-        Use the :meth:`ivector2_to_vector` method to convert an IVector2 to a Vector2.
+        Use the :meth:`ivector2_to_vector` method to convert an :type:`~kizuna.core.datatypes.ivector2.IVector2` to a
+        :type:`Vector2`.
     """
     __slots__ = ('_x', '_y')
 
     def __init__(self, x: float, y: float):
+        """Create a :type:`Vector2` with the given coordinates.
+
+        :param x: The *x*-component of the vector (negative is left, positive is right).
+        :param y: The *y*-component of the vector (negative is down, positive is up).
+        :return: A new vector with the result.
+        """
         self._x = validate_float(x)
         self._y = validate_float(y)
 
@@ -73,17 +80,13 @@ class Vector2:
 
     @property
     def x(self) -> float:
-        """Return the *x*-component of the vector.
-
-        Negative *x* is to the left, positive *x* to the right.
+        """Return the *x*-component of the vector (negative is left, positive is right).
         """
         return self._x
 
     @property
     def y(self) -> float:
-        """Return the *y*-component of the vector.
-
-        Negative *y* is downwards, positive *y* is upwards.
+        """Return the *y*-component of the vector (negative is down, positive is up).
         """
         return self._y
 
@@ -109,6 +112,12 @@ class Vector2:
         For the zero vector, this returns 0.0.
         """
         return math.atan2(self.y, self.x) * 180 / math.pi
+
+    def __str__(self) -> str:
+        return f'({self.x}, {self.y})'
+
+    def __repr__(self):
+        return f'Vector2({self.x}, {self.y})'
 
     def __add__(self, other: Vector2Like) -> Self:
         """Component-wise addition of two vectors.
@@ -245,19 +254,13 @@ class Vector2:
     def __hash__(self) -> int:
         return hash(tuple(self))
 
-    def __str__(self) -> str:
-        return f'({self.x}, {self.y})'
-
-    def __repr__(self):
-        return f'Vector2({self.x}, {self.y})'
-
 
 def validate_vector2(value: Vector2Like) -> Vector2:
-    """Validate that the given value is a Vector2D or can be converted to a Vector2D.
+    """Validate that the given value is a :type:`Vector2` or can be converted to a :type:`Vector2`.
 
     :param value: The value to validate.
     :return: The validated value.
-    :raise TypeError: If the given value is not a Vector2D and cannot be converted to such.
+    :raise TypeError: If the given value is not a :type:`Vector2` and cannot be converted to such.
     """
     if isinstance(value, Vector2):
         return value
@@ -272,11 +275,11 @@ def validate_vector2(value: Vector2Like) -> Vector2:
 
 
 def validate_vector2_or_scalar(value: Vector2 | Vector2Like | int | float) -> Vector2 | int | float:
-    """Validate that the given value is a Vector2D, can be converted to a Vector2D, or is a scalar.
+    """Validate that the given value is a :type:`Vector2`, can be converted to a :type:`Vector2`, or is a scalar.
 
     :param value: The value to validate.
     :return: The validated value.
-    :raise TypeError: If the given value is not a Vector2D and cannot be converted to such.
+    :raise TypeError: If the given value is not a :type:`Vector2`, cannot be converted to such, and not a scalar.
     """
     if isinstance(value, int | float | Vector2):
         return value
@@ -293,7 +296,7 @@ def validate_vector2_or_scalar(value: Vector2 | Vector2Like | int | float) -> Ve
 
 
 def ivector2_to_vector(value: 'IVector2') -> Vector2:
-    """Convert a IVector2 to a Vector2.
+    """Convert an integer 2D vector to a floating-point 2D vector.
 
     :param value: The value to convert.
     :return: The converted value.

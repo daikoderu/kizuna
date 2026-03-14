@@ -12,14 +12,17 @@ class ImageAsset(Asset):
     def __init__(
         self,
         path: AssetPathLike,
+        eager: bool = False,
         origin: Alignment | Vector2Like = Alignment.CENTER,
     ) -> None:
         """Define a new asset.
 
         :param path: Path to the asset, relative to the assets directory of the project.
+        :param eager: Whether this asset should be loaded immediately upon definition (``True``) or only until
+            required by Kizuna (``False``).
         :param origin: Origin of the image, used for drawing.
         """
-        super().__init__(path)
+        super().__init__(path, eager)
         self.origin = origin.value if isinstance(origin, Alignment) else validate_vector2(origin)
 
     def on_load(self) -> None:

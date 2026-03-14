@@ -57,6 +57,12 @@ class Color:
         """
         return self._a
 
+    def __str__(self):
+        return f'rgba({self.r}, {self.g}, {self.b}, {self.a})'
+
+    def __repr__(self):
+        return f'rgba({self.r}, {self.g}, {self.b}, {self.a})'
+
     def __iter__(self):
         """Iterator over the color components.
 
@@ -85,12 +91,6 @@ class Color:
 
     def __hash__(self) -> int:
         return hash(tuple(self))
-
-    def __str__(self):
-        return f'rgba({self.r}, {self.g}, {self.b}, {self.a})'
-
-    def __repr__(self):
-        return f'rgba({self.r}, {self.g}, {self.b}, {self.a})'
 
 
 def validate_color(value: ColorLike) -> Color:
