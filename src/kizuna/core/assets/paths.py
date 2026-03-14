@@ -47,6 +47,12 @@ class AssetPath:
         if self.namespace not in ('project', 'builtin'):
             raise ValueError('Only the "project" and "builtin" namespaces are allowed.')
 
+    def __str__(self) -> str:
+        return f'{self.namespace}:{self.path}'
+
+    def __repr__(self) -> str:
+        return f'AssetPath("{self.namespace}:{self.path}")'
+
 
 def validate_asset_path(value: AssetPathLike) -> AssetPath:
     """Validate that the given value is an asset path or can be converted to an asset path.
