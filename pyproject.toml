@@ -35,4 +35,5 @@ where = ['src']
 
 [tool.setuptools.package-data]
 kizuna = [
+    'assets/**/*',
 ]

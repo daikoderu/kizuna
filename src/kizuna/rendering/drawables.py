@@ -1,6 +1,6 @@
 from kizuna.config import settings
-from kizuna.core.assets import ImageAsset, FontAsset
-from kizuna.core.datatypes import Vector2, validate_vector2, Vector2Like
+from kizuna.core.assets import ImageAsset, FontAsset, DEFAULT_FONT_ASSET
+from kizuna.core.datatypes import validate_vector2, Vector2Like
 from kizuna.core.validation import validate_float, validate_type
 from kizuna.rendering.batches import DrawBatch
 
@@ -47,8 +47,8 @@ class TextDrawable(Drawable):
     def __init__(
         self,
         text: str,
-        font: FontAsset,
         position: Vector2Like,
+        font: FontAsset = DEFAULT_FONT_ASSET,
         visible: bool = True,
     ):
         super().__init__(visible)

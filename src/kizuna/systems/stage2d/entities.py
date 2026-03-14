@@ -2,8 +2,7 @@ from typing import TYPE_CHECKING
 
 from kizuna.core.datatypes import Vector2, validate_vector2, Vector2Like
 from kizuna.core.validation import validate_float, validate_type
-from kizuna.rendering.batches import DrawBatch
-from kizuna.rendering.drawables import SpriteDrawable
+from kizuna.rendering import DrawBatch, SpriteDrawable
 from kizuna.systems.stage2d.components import SpriteComponent
 from kizuna.systems.stage2d.exceptions import EntityDestroyedException
 from kizuna.utils import fullname

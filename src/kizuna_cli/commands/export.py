@@ -1,4 +1,5 @@
 import datetime
+import importlib.resources
 import os
 from pathlib import Path
 
@@ -52,6 +53,9 @@ def command():
     for element in settings.dynamic_imports:
         hidden_imports_args += ['--hidden-import', element]
 
+    # Add Kizuna's built-in assets.
+    builtin_assets_directory = importlib.resources.files('kizuna') / 'assets'
+
     try:
         # Launch PyInstaller.
         project_name = base_directory.name
@@ -60,6 +64,7 @@ def command():
             '-n', project_name,
             '-p', str(base_directory),
             '--add-data', 'assets:assets/project',
+            '--add-data', f'{builtin_assets_directory}:assets/builtin',
             '--collect-submodules', 'src',
             *hidden_imports_args,
             '--distpath', str(build_directory),

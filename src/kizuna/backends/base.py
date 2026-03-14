@@ -6,8 +6,7 @@ from kizuna.core.controllers import Controller
 if TYPE_CHECKING:
     from kizuna.core.assets import ImageAsset, FontAsset
     from kizuna.config import Settings
-    from kizuna.rendering.batches import DrawBatch
-    from kizuna.rendering.drawables import TextDrawable, SpriteDrawable
+    from kizuna.rendering import DrawBatch, TextDrawable, SpriteDrawable
 
 
 class Backend:

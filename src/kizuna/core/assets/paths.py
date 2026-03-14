@@ -25,6 +25,10 @@ class AssetPath:
     :ivar namespace: The namespace of the asset path.
     :ivar path: The absolute path inside the namespace.
     """
+    namespace: str
+    path: str
+
+    __slots__ = ('namespace', 'path')
 
     def __init__(self, path: str):
         """Create an asset path from a path string.

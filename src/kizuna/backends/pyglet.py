@@ -1,3 +1,4 @@
+import importlib.resources
 from pathlib import Path
 from typing import TYPE_CHECKING, Callable
 
@@ -9,8 +10,7 @@ if TYPE_CHECKING:
     from kizuna.core.assets import Asset, AssetPath, ImageAsset, FontAsset
     from kizuna.core.controllers import Controller
     from kizuna.config import Settings
-    from kizuna.rendering.batches import DrawBatch
-    from kizuna.rendering.drawables import TextDrawable, SpriteDrawable
+    from kizuna.rendering import DrawBatch, TextDrawable, SpriteDrawable
 
 
 PYGLET_CONSTANTS_TO_KIZUNA_KEYS = {
@@ -19,10 +19,6 @@ PYGLET_CONSTANTS_TO_KIZUNA_KEYS = {
     pyglet.window.key.UP: 'up',
     pyglet.window.key.DOWN: 'down',
 }
-
-
-def _resolve_path(path: 'AssetPath') -> str:
-    return path.path[1:]
 
 
 class PygletBackend(Backend):
@@ -49,13 +45,19 @@ class PygletBackend(Backend):
         self.texts = {}
 
     def initialize(self, base_directory: Path, standalone: bool):
-        # Add the assets to the path.
+        # Save if we are standalone for asset path resolution.
         self.standalone = standalone
+
+        # Configure asset path.
         if standalone:
-            project_assets_path = base_directory / 'assets' / 'project'
+            pyglet.resource.path = [
+                str(base_directory / 'assets'),
+            ]
         else:
-            project_assets_path = base_directory / 'assets'
-        pyglet.resource.path = [str(project_assets_path)]
+            pyglet.resource.path = [
+                str(base_directory / 'assets'),
+                str(importlib.resources.files('kizuna') / 'assets'),
+            ]
         pyglet.resource.reindex()
 
     def launch_game_loop(
@@ -99,13 +101,19 @@ class PygletBackend(Backend):
 
     # ---- ASSET LOADING METHODS ----
 
+    def _resolve_path(self, path: 'AssetPath') -> str:
+        if self.standalone:
+            return path.namespace + path.path
+        else:
+            return path.path[1:]
+
     def load_image_asset(self, asset: 'ImageAsset'):
-        pyglet_image = pyglet.resource.image(_resolve_path(asset.path))
+        pyglet_image = pyglet.resource.image(self._resolve_path(asset.path))
         pyglet_image.anchor_x, pyglet_image.anchor_y = (pyglet_image.width, pyglet_image.height) * asset.origin
         self.assets[asset] = pyglet_image
 
     def load_font_asset(self, asset: 'FontAsset'):
-        pyglet.resource.add_font(_resolve_path(asset.path))
+        pyglet.resource.add_font(self._resolve_path(asset.path))
         self.assets[asset] = pyglet.font.load(name=asset.family_name, size=asset.size)
 
     # ---- PRE-DRAWING METHODS ----

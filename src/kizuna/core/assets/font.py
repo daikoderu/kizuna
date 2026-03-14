@@ -25,4 +25,4 @@ class FontAsset(Asset):
         settings.backend.load_font_asset(self)
 
 
-# TODO: Define the default font asset and bundle it.
+DEFAULT_FONT_ASSET = FontAsset('builtin:/fonts/mplus-1p/MPLUS1p-Regular.ttf', family_name='M PLUS 1p', size=12)

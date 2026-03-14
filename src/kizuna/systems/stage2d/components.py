@@ -1,6 +1,6 @@
 from kizuna.core.assets import ImageAsset
 from kizuna.core.datatypes import Vector2
-from kizuna.rendering.batches import DrawBatch
+from kizuna.rendering import DrawBatch
 
 
 class SpriteComponent:
