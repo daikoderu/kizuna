@@ -15,14 +15,6 @@ class SettingSpec:
     """Specification for a setting.
     """
 
-    def __init__(self, name: str, validator: Callable[[Any], Any], default: Any = None, required: bool = False):
-        """Private constructor. Use :meth:`required` or :meth:`default` instead.
-        """
-        self.name = name.upper()
-        self.validator = validator
-        self.default = default
-        self.required = required
-
     @staticmethod
     def required(name: str, validator: Callable[[Any], Any]):
         """Define a required setting.
@@ -44,16 +36,22 @@ class SettingSpec:
         """
         return SettingSpec(name, validator, required=False, default=default)
 
-    def validate(self, settings_dict: dict[str, Any], errors: dict[str, TypeError | ValueError]):
-        try:
-            settings_dict[self.name] = self.validator(settings_dict[self.name])
-        except (TypeError, ValueError) as e:
-            errors[self.name] = e
-        except KeyError:
-            if not self.required:
-                settings_dict[self.name] = self.default
-            else:
-                errors[self.name] = TypeError(f'Setting "{self.name}" not set, but is required.')
+    def __str__(self) -> str:
+        return self.name
+
+    def __repr__(self) -> str:
+        if self.required:
+            return f'SettingSpec("{self.name}", required)'
+        else:
+            return f'SettingSpec("{self.name}", default={repr(self.default)})'
+
+    def __init__(self, name: str, validator: Callable[[Any], Any], default: Any = None, required: bool = False):
+        """Private constructor. Use :meth:`required` or :meth:`default` instead.
+        """
+        self.name = name.upper()
+        self.validator = validator
+        self.default = default
+        self.required = required
 
 
 BASIC_SETTINGS = [
@@ -71,7 +69,7 @@ BASIC_SETTINGS = [
 class Settings:
     """Container for project settings.
 
-    Settings are readonly and a singleton.
+    Settings are readonly and a singleton. Use :data:`settings` to access the project settings.
     """
 
     def __init__(self):
@@ -101,6 +99,12 @@ class Settings:
             raise BackendNotInstantiatedError()
         return self._backend
 
+    def __str__(self) -> str:
+        return 'Settings'
+
+    def __repr__(self) -> str:
+        return f'Settings'
+
     def load(self, module: str):
         """Load the settings and validate them.
         """
@@ -113,7 +117,7 @@ class Settings:
         # Validate the basic settings.
         errors = {}
         for setting in BASIC_SETTINGS:
-            setting.validate(self._settings, errors)
+            self._validate(setting, errors)  # noqa
             self._register_dynamic_import(self._settings[setting.name])
         if len(errors) > 0:
             raise SettingsValidationError(errors)
@@ -122,7 +126,7 @@ class Settings:
         # Validate the controller settings.
         for controller_class in self._settings['CONTROLLERS']:
             for setting in controller_class.settings:
-                setting.validate(self._settings, errors)
+                self._validate(setting, errors)  # noqa
                 self._register_dynamic_import(self._settings[setting.name])
 
         # Create the backend instance.
@@ -140,6 +144,18 @@ class Settings:
                 self._register_dynamic_import(k)
                 self._register_dynamic_import(v)
 
+    def _validate(self, spec: SettingSpec, errors: dict[str, TypeError | ValueError]):
+        try:
+            self._settings[spec.name] = spec.validator(self._settings[spec.name])
+        except (TypeError, ValueError) as e:
+            errors[spec.name] = e
+        except KeyError:
+            if not spec.required:
+                self._settings[spec.name] = spec.default
+            else:
+                errors[spec.name] = TypeError(f'Setting "{spec.name}" not set, but is required.')
 
 
 settings = Settings()
+"""Settings singleton instance.
+"""

@@ -7,3 +7,4 @@ API Reference
     :glob:
 
     core/index
+    config
